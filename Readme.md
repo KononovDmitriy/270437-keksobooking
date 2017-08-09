@@ -1,7 +1,7 @@
 # Личный проект «Кексобукинг» [![Build status][travis-image]][travis-url]
 
 * Студент: [Дмитрий Кононов](https://up.htmlacademy.ru/javascript/10/user/270437).
-* Наставник: `Неизвестно`.
+* Наставник: [Наталья Ёркина](https://up.htmlacademy.ru/javascript/10/user/50014).
 
 ---
 
