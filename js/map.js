@@ -47,6 +47,19 @@ var domElementsAttributs = {
 
 var MAIN_ARRAY_LENGHT = 8;
 
+var lodge = {
+  PRICE: '{{offer.price}}\u20bd/ночь',
+  PRICE_TEMPLATE: '{{offer.price}}',
+  GUESTS: 'Для {{offer.guests}} гостей в {{offer.rooms}} комнатах',
+  GUESTS_TEMPLATE: '{{offer.guests}}',
+  ROOMS_TEMPLATE: '{{offer.rooms}}',
+  TIME: 'Заезд после {{offer.checkin}}, выезд до {{offer.checkout}}',
+  TIME_IN_TEMPLATE: '{{offer.checkin}}',
+  TIME_OUT_TEMPLATE: '{{offer.checkout}}',
+  FEATURES: 'feature__image feature__image--{{offer.features}}',
+  FEATURES_TEMPLATE: '{{offer.features}}'
+};
+
 // Объект с большой буквы ?!?!
 var arrayIndexesAvatars = {
   arrayIndexes: [0, 1, 2, 3, 4, 5, 6, 7],
@@ -115,22 +128,82 @@ var getFeatures = function () {
 var creatingDomElements = function (ads, domElements) {
   var div;
   var img;
-  // Цикл
-  var i = 0;
-  div = document.createElement('div');
-  div.className = domElementsAttributs.DIV_CLASS
-  // стили что-то не работают
-  div.style.left = ads[i].location.x + 'px';
-  div.style.height = ads[i].location.y + 'px';
-  img = document.createElement('img');
-  img.src = ads[i].author.avatar;
-  img.className = domElementsAttributs.IMG_CLASS;
-  // стили что-то не работают
-  img.style.width = domElementsAttributs.IMG_WIDTH;
-  img.style.height = domElementsAttributs.IMG_HEIGHT;
+  var width;
+  var height;
+  for (var i = 0; i < ads.length; i++) {
+    div = document.createElement('div');
+    div.className = domElementsAttributs.DIV_CLASS;
+    width = window.parseInt(window.getComputedStyle(div, null).width);
+    height = window.parseInt(window.getComputedStyle(div, null).height);
+    div.style.left = (ads[i].location.x - (width / 2)) + 'px';
+    div.style.top = (ads[i].location.y - height) + 'px';
+    img = document.createElement('img');
+    img.src = ads[i].author.avatar;
+    img.className = domElementsAttributs.IMG_CLASS;
+    img.width = domElementsAttributs.IMG_WIDTH;
+    img.height = domElementsAttributs.IMG_HEIGHT;
+    div.appendChild(img);
+    domElements[i] = div;
+  }
+};
+
+var appendDomElements = function (domElements) {
+  var parent = document.querySelector('.tokyo__pin-map');
+  var fragment = document.createDocumentFragment();
+  for (var i = 0; i < domElements.length; i++) {
+    fragment.appendChild(domElements[i]);
+  }
+  parent.appendChild(fragment);
+};
+
+var gettingLodgeType = function (type) {
+  var returnValue;
+  switch (type) {
+    case 'flat': returnValue = 'Квартира'; break;
+    case 'bungalo': returnValue = 'Бунгало'; break;
+    case 'house': returnValue = 'Дом'; break;
+  }
+  return returnValue;
+};
+
+var creatingFeaturesElements = function (currentElement, features) {
+  var parent = currentElement.querySelector('.lodge__features');
+  var span;
+  for (var i = 0; i < features.length; i++) {
+    span = document.createElement('span');
+    span.className = lodge.FEATURES.replace(lodge.FEATURES_TEMPLATE, features[i]);
+    parent.appendChild(span);
+  }
+};
+
+var creatingElementFromTemplate = function (ads) {
+  var template = document.querySelector('#lodge-template');
+  template.content.querySelector('.lodge__title').textContent = ads.offer.title;
+  template.content.querySelector('.lodge__address').textContent = ads.offer.address;
+  template.content.querySelector('.lodge__price').textContent =
+      lodge.PRICE.replace(lodge.PRICE_TEMPLATE, ads.offer.price);
+  template.content.querySelector('.lodge__type').textContent = gettingLodgeType(ads.offer.type);
+  var temp = lodge.GUESTS.replace(lodge.GUESTS_TEMPLATE, ads.offer.guests);
+  temp = temp.replace(lodge.ROOMS_TEMPLATE, ads.offer.rooms);
+  template.content.querySelector('.lodge__rooms-and-guests').textContent = temp;
+  temp = lodge.TIME.replace(lodge.TIME_IN_TEMPLATE, ads.offer.checkin);
+  temp = temp.replace(lodge.TIME_OUT_TEMPLATE, ads.offer.checkout);
+  template.content.querySelector('.lodge__checkin-time').textContent = temp;
+  creatingFeaturesElements(template.content, ads.offer.features);
+  template.content.querySelector('.lodge__description').textContent = ads.offer.description;
+  document.querySelector('.dialog__title img').src = ads.author.avatar;
+  return document.importNode(template.content, true);
+};
+
+var templateReplacement = function (elementFromTemplate) {
+  var oldNode = document.querySelector('.dialog__panel');
+  oldNode.parentNode.replaceChild(elementFromTemplate, oldNode);
 };
 
 var ads = [];
 var domElements = [];
 creatingArray(ads);
 creatingDomElements(ads, domElements);
+appendDomElements(domElements);
+var elementFromTemplate = creatingElementFromTemplate(ads[0]);
+templateReplacement(elementFromTemplate);
