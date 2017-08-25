@@ -93,6 +93,7 @@ var getFeatures = function () {
   for (var i = ARRAY_INIT_VALUE; i < arrayIndexesFeatures.length; i++) {
     features[i] = getRandomValues(arrayIndexesFeatures, ARRAY_INIT_VALUE);
   }
+
   features.forEach(function (value, index) {
     features[index] = meanings.FEATURES[value];
   });
@@ -204,5 +205,3 @@ var arrayIndexesAvatars = createArrayIndexes(MAIN_ARRAY_LENGHT);
 var arrayIndexesTitle = createArrayIndexes(meanings.TITLES.length);
 var ads = createArray();
 drawElements(ads);
-
-
