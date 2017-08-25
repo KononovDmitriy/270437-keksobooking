@@ -1,5 +1,18 @@
 'use strict';
 
+var randomBorders = {
+  PRICE_MIN: 1000,
+  PRICE_MAX: 1000001,
+  ROOMS_MIN: 1,
+  ROOMS_MAX: 6,
+  GUESTS_MIN: 1,
+  GUESTS_MAX: 101,
+  LOCATION_X_MIN: 300,
+  LOCATION_X_MAX: 901,
+  LOCATION_Y_MIN: 100,
+  LOCATION_Y_MAX: 501
+};
+
 var meanings = {
   TITLES: ['Большая уютная квартира', 'Маленькая неуютная квартира',
     'Огромный прекрасный дворец', 'Маленький ужасный дворец', 'Красивый гостевой домик',
@@ -25,17 +38,17 @@ var createUserObject = function () {
   userObject.author = {};
   userObject.author.avatar = getImageSrc();
   userObject.location = {};
-  userObject.location.x = getLocationX();
-  userObject.location.y = getLocationY();
+  userObject.location.x = getRandomNumber(randomBorders.LOCATION_X_MIN, randomBorders.LOCATION_X_MAX);
+  userObject.location.y = getRandomNumber(randomBorders.LOCATION_Y_MIN, randomBorders.LOCATION_Y_MAX);
   userObject.offer = {};
-  userObject.offer.address = getAddress(userObject.location.x, userObject.location.y);
-  userObject.offer.title = getTitles();
-  userObject.offer.price = getPrice();
+  userObject.offer.address = userObject.location.x + ', ' + userObject.location.y;
+  userObject.offer.title = meanings.TITLES[getRandomValues(arrayIndexesTitle, ARRAY_INIT_VALUE)];
+  userObject.offer.price = getRandomNumber(randomBorders.PRICE_MIN, randomBorders.PRICE_MAX);
   userObject.offer.type = getType();
-  userObject.offer.rooms = getRooms();
-  userObject.offer.guests = getGuests();
-  userObject.offer.checkin = getCheckin();
-  userObject.offer.checkout = getCheckout();
+  userObject.offer.rooms = getRandomNumber(randomBorders.ROOMS_MIN, randomBorders.ROOMS_MAX);
+  userObject.offer.guests = getRandomNumber(randomBorders.GUESTS_MIN, randomBorders.GUESTS_MAX);
+  userObject.offer.checkin = meanings.CHEK_TIMES[getRandomNumber(ARRAY_INIT_VALUE, meanings.CHEK_TIMES.length)];
+  userObject.offer.checkout = meanings.CHEK_TIMES[getRandomNumber(ARRAY_INIT_VALUE, meanings.CHEK_TIMES.length)];
   userObject.offer.features = getFeatures();
   userObject.offer.description = '';
   userObject.offer.photos = [];
@@ -53,55 +66,9 @@ var getImageSrc = function () {
   return avatarStrings.START + '0' + index + avatarStrings.END;
 };
 
-var getAddress = function (locationX, locationY) {
-  return locationX + ', ' + locationY;
-};
-
-var getTitles = function () {
-  return meanings.TITLES[getRandomValues(arrayIndexesTitle, ARRAY_INIT_VALUE)];
-};
-
-var getPrice = function () {
-  var PRICE_MIN = 1000;
-  var PRICE_MAX = 1000001;
-  return getRandomNumber(PRICE_MIN, PRICE_MAX);
-};
-
 var getType = function () {
   var TYPES = ['flat', 'house', 'bungalo'];
   return TYPES[getRandomNumber(ARRAY_INIT_VALUE, TYPES.length)];
-};
-
-var getRooms = function () {
-  var ROOMS_MIN = 1;
-  var ROOMS_MAX = 6;
-  return getRandomNumber(ROOMS_MIN, ROOMS_MAX);
-};
-
-var getGuests = function () {
-  var GUESTS_MIN = 1;
-  var GUESTS_MAX = 101;
-  return getRandomNumber(GUESTS_MIN, GUESTS_MAX);
-};
-
-var getCheckin = function () {
-  return meanings.CHEK_TIMES[getRandomNumber(ARRAY_INIT_VALUE, meanings.CHEK_TIMES.length)];
-};
-
-var getCheckout = function () {
-  return meanings.CHEK_TIMES[getRandomNumber(ARRAY_INIT_VALUE, meanings.CHEK_TIMES.length)];
-};
-
-var getLocationX = function () {
-  var LOCATION_X_MIN = 300;
-  var LOCATION_X_MAX = 901;
-  return getRandomNumber(LOCATION_X_MIN, LOCATION_X_MAX);
-};
-
-var getLocationY = function () {
-  var LOCATION_Y_MIN = 100;
-  var LOCATION_Y_MAX = 501;
-  return getRandomNumber(LOCATION_Y_MIN, LOCATION_Y_MAX);
 };
 
 var getRandomNumber = function (min, max) {
@@ -175,13 +142,11 @@ var getLodgeType = function (type) {
 };
 
 var createFeaturesElements = function (currentElement, features) {
-  var LODGE_FUTURES_STRING = 'feature__image feature__image--';
-
   var parent = currentElement.querySelector('.lodge__features');
 
   features.forEach(function (value) {
     var span = document.createElement('span');
-    span.className = LODGE_FUTURES_STRING + value;
+    span.className = 'feature__image feature__image--' + value;
     parent.appendChild(span);
   });
 
@@ -207,24 +172,16 @@ var createElementFromTemplate = function (ads) {
 };
 
 var getLodgePrice = function (lodgePrice) {
-  var LODGE_PRICE_STRING = '\u20bd/ночь';
-  return lodgePrice + LODGE_PRICE_STRING;
+  return lodgePrice + '\u20bd/ночь';
 };
 
 var getLodgeGuests = function (lodgeGuests, lodgeRooms) {
-  var LODGE_GUESTS_STRING_1 = 'Для ';
-  var LODGE_GUESTS_STRING_2 = ' гостей в ';
-  var LODGE_GUESTS_STRING_3 = ' комнатах';
-
-  return LODGE_GUESTS_STRING_1 + lodgeGuests + LODGE_GUESTS_STRING_2 +
-    lodgeRooms + LODGE_GUESTS_STRING_3;
+  return 'Для ' + lodgeGuests + ' гостей в ' +
+    lodgeRooms + ' комнатах';
 };
 
 var getLodgeCheckinTime = function (checkIn, checkOut) {
-  var LODGE_CHECKIN_STRING_1 = 'Заезд после ';
-  var LODGE_CHECKIN_STRING_2 = ', выезд до ';
-
-  return LODGE_CHECKIN_STRING_1 + checkIn + LODGE_CHECKIN_STRING_2 + checkOut;
+  return 'Заезд после ' + checkIn + ', выезд до ' + checkOut;
 };
 
 
