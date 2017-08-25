@@ -38,17 +38,26 @@ var createUserObject = function () {
   userObject.author = {};
   userObject.author.avatar = getImageSrc();
   userObject.location = {};
-  userObject.location.x = getRandomNumber(randomBorders.LOCATION_X_MIN, randomBorders.LOCATION_X_MAX);
-  userObject.location.y = getRandomNumber(randomBorders.LOCATION_Y_MIN, randomBorders.LOCATION_Y_MAX);
+  userObject.location.x = getRandomNumber(randomBorders.LOCATION_X_MIN,
+      randomBorders.LOCATION_X_MAX);
+  userObject.location.y = getRandomNumber(randomBorders.LOCATION_Y_MIN,
+      randomBorders.LOCATION_Y_MAX);
   userObject.offer = {};
-  userObject.offer.address = userObject.location.x + ', ' + userObject.location.y;
-  userObject.offer.title = meanings.TITLES[getRandomValues(arrayIndexesTitle, ARRAY_INIT_VALUE)];
-  userObject.offer.price = getRandomNumber(randomBorders.PRICE_MIN, randomBorders.PRICE_MAX);
+  userObject.offer.address = userObject.location.x + ', ' +
+      userObject.location.y;
+  userObject.offer.title = meanings.TITLES[getRandomValues(arrayIndexesTitle,
+      ARRAY_INIT_VALUE)];
+  userObject.offer.price = getRandomNumber(randomBorders.PRICE_MIN,
+      randomBorders.PRICE_MAX);
   userObject.offer.type = getType();
-  userObject.offer.rooms = getRandomNumber(randomBorders.ROOMS_MIN, randomBorders.ROOMS_MAX);
-  userObject.offer.guests = getRandomNumber(randomBorders.GUESTS_MIN, randomBorders.GUESTS_MAX);
-  userObject.offer.checkin = meanings.CHEK_TIMES[getRandomNumber(ARRAY_INIT_VALUE, meanings.CHEK_TIMES.length)];
-  userObject.offer.checkout = meanings.CHEK_TIMES[getRandomNumber(ARRAY_INIT_VALUE, meanings.CHEK_TIMES.length)];
+  userObject.offer.rooms = getRandomNumber(randomBorders.ROOMS_MIN,
+      randomBorders.ROOMS_MAX);
+  userObject.offer.guests = getRandomNumber(randomBorders.GUESTS_MIN,
+      randomBorders.GUESTS_MAX);
+  userObject.offer.checkin = meanings.CHEK_TIMES[getRandomNumber(
+      ARRAY_INIT_VALUE, meanings.CHEK_TIMES.length)];
+  userObject.offer.checkout = meanings.CHEK_TIMES[getRandomNumber(
+      ARRAY_INIT_VALUE, meanings.CHEK_TIMES.length)];
   userObject.offer.features = getFeatures();
   userObject.offer.description = '';
   userObject.offer.photos = [];
@@ -56,14 +65,10 @@ var createUserObject = function () {
 };
 
 var getImageSrc = function () {
-  var avatarStrings = {
-    START: 'img/avatars/user',
-    END: '.png'
-  };
   var index = getRandomValues(arrayIndexesAvatars, ARRAY_INIT_VALUE);
 
   index++;
-  return avatarStrings.START + '0' + index + avatarStrings.END;
+  return 'img/avatars/user0' + index + '.png';
 };
 
 var getType = function () {
@@ -81,7 +86,8 @@ var getRandomValues = function (indexes, minIndex) {
 };
 
 var getFeatures = function () {
-  var randomNumberElements = getRandomNumber(ARRAY_INIT_VALUE, meanings.FEATURES.length);
+  var randomNumberElements = getRandomNumber(ARRAY_INIT_VALUE,
+      meanings.FEATURES.length);
   var arrayIndexesFeatures = createArrayIndexes(randomNumberElements);
   var features = [];
   for (var i = ARRAY_INIT_VALUE; i < arrayIndexesFeatures.length; i++) {
@@ -157,33 +163,22 @@ var createElementFromTemplate = function (ads) {
 
   template.querySelector('.lodge__title').textContent = ads.offer.title;
   template.querySelector('.lodge__address').textContent = ads.offer.address;
-  template.querySelector('.lodge__price').textContent = getLodgePrice(ads.offer.price);
-  template.querySelector('.lodge__type').textContent = getLodgeType(ads.offer.type);
+  template.querySelector('.lodge__price').textContent =
+      ads.offer.price + '\u20bd/ночь';
+  template.querySelector('.lodge__type').textContent =
+      getLodgeType(ads.offer.type);
   template.querySelector('.lodge__rooms-and-guests').textContent =
-    getLodgeGuests(ads.offer.guests, ads.offer.rooms);
+      'Для ' + ads.offer.guests + ' гостей в ' + ads.offer.rooms + ' комнатах';
   template.querySelector('.lodge__checkin-time').textContent =
-    getLodgeCheckinTime(ads.offer.checkin, ads.offer.checkout);
-  template.querySelector('.lodge__description').textContent = ads.offer.description;
+      'Заезд после ' + ads.offer.checkin + ', выезд до ' + ads.offer.checkout;
+  template.querySelector('.lodge__description').textContent =
+      ads.offer.description;
   document.querySelector('.dialog__title img').src = ads.author.avatar;
 
   createFeaturesElements(template, ads.offer.features);
 
   return template;
 };
-
-var getLodgePrice = function (lodgePrice) {
-  return lodgePrice + '\u20bd/ночь';
-};
-
-var getLodgeGuests = function (lodgeGuests, lodgeRooms) {
-  return 'Для ' + lodgeGuests + ' гостей в ' +
-    lodgeRooms + ' комнатах';
-};
-
-var getLodgeCheckinTime = function (checkIn, checkOut) {
-  return 'Заезд после ' + checkIn + ', выезд до ' + checkOut;
-};
-
 
 var templateReplace = function (elementFromTemplate) {
   var oldNode = document.querySelector('.dialog__panel');
