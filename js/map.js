@@ -31,8 +31,6 @@ var meanings = {
 var ARRAY_INIT_VALUE = 0;
 var MAIN_ARRAY_LENGHT = 8;
 
-var activePin;
-
 var arrayIndexesAvatars = createArrayIndexes(MAIN_ARRAY_LENGHT);
 var arrayIndexesTitle = createArrayIndexes(meanings.TITLES.length);
 
@@ -222,7 +220,6 @@ function hideDialog() {
 function showElement(element) {
   element.classList.remove('hidden');
 }
-
 
 function togglePin(currentPin) {
   var activeElement = document.querySelector('.pin--active');
