@@ -87,15 +87,6 @@ function getType() {
   return TYPES[getRandomNumber(ARRAY_INIT_VALUE, TYPES.length)];
 }
 
-function getRandomNumber(min, max) {
-  return Math.floor(Math.random() * (max - min)) + min;
-}
-
-function getRandomValues(indexes, minIndex) {
-  var randomValue = getRandomNumber(minIndex, indexes.length);
-  return indexes.splice(randomValue, 1);
-}
-
 function getFeatures() {
   var randomNumberElements = getRandomNumber(ARRAY_INIT_VALUE,
       meanings.FEATURES.length);
@@ -109,6 +100,24 @@ function getFeatures() {
     features[index] = meanings.FEATURES[value];
   });
   return features;
+}
+
+function getLodgeType(type) {
+  var LODGE_TYPE = {
+    flat: 'Квартира',
+    house: 'Дом',
+    bungalo: 'Бунгало'
+  };
+  return LODGE_TYPE[type];
+}
+
+function getRandomNumber(min, max) {
+  return Math.floor(Math.random() * (max - min)) + min;
+}
+
+function getRandomValues(indexes, minIndex) {
+  var randomValue = getRandomNumber(minIndex, indexes.length);
+  return indexes.splice(randomValue, 1);
 }
 
 function createDomElements(ads) {
@@ -128,7 +137,6 @@ function createDomElements(ads) {
     var pinBaloon = document.createElement('div');
     var userAvatar = document.createElement('img');
     pinBaloon.classList.add(domElementsAttributs.DIV_CLASS);
-    pinBaloon.classList.add('jsPin' + index);
     pinBaloon.style.left = (value.location.x - (pin.WIDTH / 2)) + 'px';
     pinBaloon.style.top = (value.location.y - pin.HEIGHT) + 'px';
     pinBaloon.setAttribute('tabindex', 0);
@@ -140,7 +148,7 @@ function createDomElements(ads) {
 
     domElements[index] = pinBaloon;
 
-    pinAddHandler(pinBaloon);
+    pinAddHandler(pinBaloon, index);
   });
 
   return domElements;
@@ -153,15 +161,6 @@ function appendDomElements(domElements) {
     fragment.appendChild(domElements[i]);
   }
   parent.appendChild(fragment);
-}
-
-function getLodgeType(type) {
-  var LODGE_TYPE = {
-    flat: 'Квартира',
-    house: 'Дом',
-    bungalo: 'Бунгало'
-  };
-  return LODGE_TYPE[type];
 }
 
 function createFeaturesElements(currentElement, features) {
@@ -215,50 +214,36 @@ function drawPins(ads) {
   appendDomElements(domElements);
 }
 
-function drawDialogPanel(pin) {
-  var pinJsClass = pin.classList.item(1);
-  createDialogPanelFromTemplate(ads[parseInt(pinJsClass.slice(5), 10)]);
+function drawDialogPanel(index) {
+  createDialogPanelFromTemplate(ads[index]);
 }
 
 function hideDialog() {
   document.querySelector('.dialog').classList.add('hidden');
-  deactivatedPin();
+  todglePin(false);
 }
 
 function showElement(element) {
   element.classList.remove('hidden');
 }
 
-function activatedPin(currentPin) {
-  currentPin.classList.add('pin--active');
-  activePin = currentPin;
-}
 
-function deactivatedPin() {
+function todglePin(currentPin) {
   if (activePin) {
     activePin.classList.remove('pin--active');
   }
+  if (currentPin) {
+    currentPin.classList.add('pin--active');
+    activePin = currentPin;
+  }
 }
 
-function dialogcloseAddHandler() {
-  var element = document.querySelector('.dialog__close');
-  element.addEventListener('click', dialogcloseClickHandler);
-  element.addEventListener('keydown', dialogcloseKeydownHandler);
-  document.querySelector('html').addEventListener('keydown',
-      htmlKeydownHandler);
-}
-
-function pinAddHandler(pin) {
-  pin.addEventListener('click', pinClickHandler);
-  pin.addEventListener('keydown', pinKeydownHandler);
-}
-
-function showDialog(event) {
-  deactivatedPin();
-  activatedPin(event.currentTarget);
-  drawDialogPanel(event.currentTarget);
+function showDialog(element, index) {
+  todglePin(element);
+  drawDialogPanel(index);
   showElement(document.querySelector('.dialog'));
 }
+
 
 function htmlKeydownHandler(event) {
   var dialog = document.querySelector('.dialog');
@@ -267,27 +252,34 @@ function htmlKeydownHandler(event) {
   }
 }
 
-function pinClickHandler(event) {
-  showDialog(event);
+function addDialogCloseHandler() {
+  var element = document.querySelector('.dialog__close');
+  element.addEventListener('click', dialogCloseClickHandler);
+  document.querySelector('html').addEventListener('keydown',
+      htmlKeydownHandler);
 }
 
-function pinKeydownHandler(event) {
+function pinAddHandler(pin, index) {
+  pin.addEventListener('click', pinClickHandler.bind(null, index));
+  pin.addEventListener('keydown', pinKeydownHandler.bind(null, index));
+}
+
+function pinClickHandler(index, event) {
+  showDialog(event.currentTarget, index);
+}
+
+function pinKeydownHandler(index, event) {
   if (event.keyCode === keyCode.ENTER) {
-    showDialog(event);
+    showDialog(event.currentTarget, index);
   }
 }
 
-function dialogcloseClickHandler() {
+function dialogCloseClickHandler() {
   hideDialog();
 }
 
-function dialogcloseKeydownHandler(event) {
-  if (event.keyCode === keyCode.ENTER) {
-    hideDialog();
-  }
-}
 
 hideDialog();
-dialogcloseAddHandler();
+addDialogCloseHandler();
 var ads = createArray();
 drawPins(ads);
