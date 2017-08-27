@@ -214,13 +214,9 @@ function drawPins(ads) {
   appendDomElements(domElements);
 }
 
-function drawDialogPanel(index) {
-  createDialogPanelFromTemplate(ads[index]);
-}
-
 function hideDialog() {
   document.querySelector('.dialog').classList.add('hidden');
-  todglePin(false);
+  togglePin();
 }
 
 function showElement(element) {
@@ -228,7 +224,7 @@ function showElement(element) {
 }
 
 
-function todglePin(currentPin) {
+function togglePin(currentPin) {
   if (activePin) {
     activePin.classList.remove('pin--active');
   }
@@ -239,15 +235,15 @@ function todglePin(currentPin) {
 }
 
 function showDialog(element, index) {
-  todglePin(element);
-  drawDialogPanel(index);
+  togglePin(element);
+  createDialogPanelFromTemplate(ads[index]);
   showElement(document.querySelector('.dialog'));
 }
 
 
-function htmlKeydownHandler(event) {
+function htmlKeydownHandler(evt) {
   var dialog = document.querySelector('.dialog');
-  if (event.keyCode === keyCode.ESC && !dialog.classList.contains('hidden')) {
+  if (evt.keyCode === keyCode.ESC && !dialog.classList.contains('hidden')) {
     hideDialog();
   }
 }
@@ -264,20 +260,20 @@ function pinAddHandler(pin, index) {
   pin.addEventListener('keydown', pinKeydownHandler.bind(null, index));
 }
 
-function pinClickHandler(index, event) {
-  showDialog(event.currentTarget, index);
+function pinClickHandler(index, evt) {
+  showDialog(evt.currentTarget, index);
 }
 
-function pinKeydownHandler(index, event) {
-  if (event.keyCode === keyCode.ENTER) {
-    showDialog(event.currentTarget, index);
+function pinKeydownHandler(index, evt) {
+  if (evt.keyCode === keyCode.ENTER) {
+    showDialog(evt.currentTarget, index);
   }
 }
 
-function dialogCloseClickHandler() {
+function dialogCloseClickHandler(evt) {
+  evt.preventDefault();
   hideDialog();
 }
-
 
 hideDialog();
 addDialogCloseHandler();
