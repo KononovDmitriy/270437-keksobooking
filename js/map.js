@@ -13,27 +13,38 @@ var randomBorders = {
   LOCATION_Y_MAX: 501
 };
 
+var keyCode = {
+  ESC: 27,
+  ENTER: 13
+};
+
 var meanings = {
   TITLES: ['Большая уютная квартира', 'Маленькая неуютная квартира',
-    'Огромный прекрасный дворец', 'Маленький ужасный дворец', 'Красивый гостевой домик',
-    'Некрасивый негостеприимный домик', 'Уютное бунгало далеко от моря',
-    'Неуютное бунгало по колено в воде'],
+    'Огромный прекрасный дворец', 'Маленький ужасный дворец',
+    'Красивый гостевой домик', 'Некрасивый негостеприимный домик',
+    'Уютное бунгало далеко от моря', 'Неуютное бунгало по колено в воде'],
   CHEK_TIMES: ['12:00', '13:00', '14:00'],
-  FEATURES: ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner']
+  FEATURES: ['wifi', 'dishwasher', 'parking', 'washer', 'elevator',
+    'conditioner']
 };
 
 var ARRAY_INIT_VALUE = 0;
 var MAIN_ARRAY_LENGHT = 8;
 
-var createArray = function () {
+var activePin;
+
+var arrayIndexesAvatars = createArrayIndexes(MAIN_ARRAY_LENGHT);
+var arrayIndexesTitle = createArrayIndexes(meanings.TITLES.length);
+
+function createArray() {
   var ads = [];
   for (var i = 0; i < MAIN_ARRAY_LENGHT; i++) {
     ads[i] = createUserObject();
   }
   return ads;
-};
+}
 
-var createUserObject = function () {
+function createUserObject() {
   var userObject = {};
   userObject.author = {};
   userObject.author.avatar = getImageSrc();
@@ -62,30 +73,21 @@ var createUserObject = function () {
   userObject.offer.description = '';
   userObject.offer.photos = [];
   return userObject;
-};
+}
 
-var getImageSrc = function () {
+function getImageSrc() {
   var index = getRandomValues(arrayIndexesAvatars, ARRAY_INIT_VALUE);
 
   index++;
   return 'img/avatars/user0' + index + '.png';
-};
+}
 
-var getType = function () {
+function getType() {
   var TYPES = ['flat', 'house', 'bungalo'];
   return TYPES[getRandomNumber(ARRAY_INIT_VALUE, TYPES.length)];
-};
+}
 
-var getRandomNumber = function (min, max) {
-  return Math.floor(Math.random() * (max - min)) + min;
-};
-
-var getRandomValues = function (indexes, minIndex) {
-  var randomValue = getRandomNumber(minIndex, indexes.length);
-  return indexes.splice(randomValue, 1);
-};
-
-var getFeatures = function () {
+function getFeatures() {
   var randomNumberElements = getRandomNumber(ARRAY_INIT_VALUE,
       meanings.FEATURES.length);
   var arrayIndexesFeatures = createArrayIndexes(randomNumberElements);
@@ -98,9 +100,27 @@ var getFeatures = function () {
     features[index] = meanings.FEATURES[value];
   });
   return features;
-};
+}
 
-var createDomElements = function (ads) {
+function getLodgeType(type) {
+  var LODGE_TYPE = {
+    flat: 'Квартира',
+    house: 'Дом',
+    bungalo: 'Бунгало'
+  };
+  return LODGE_TYPE[type];
+}
+
+function getRandomNumber(min, max) {
+  return Math.floor(Math.random() * (max - min)) + min;
+}
+
+function getRandomValues(indexes, minIndex) {
+  var randomValue = getRandomNumber(minIndex, indexes.length);
+  return indexes.splice(randomValue, 1);
+}
+
+function createDomElements(ads) {
   var domElementsAttributs = {
     DIV_CLASS: 'pin',
     IMG_CLASS: 'rounded',
@@ -116,39 +136,34 @@ var createDomElements = function (ads) {
   ads.forEach(function (value, index) {
     var pinBaloon = document.createElement('div');
     var userAvatar = document.createElement('img');
-    pinBaloon.className = domElementsAttributs.DIV_CLASS;
+    pinBaloon.classList.add(domElementsAttributs.DIV_CLASS);
     pinBaloon.style.left = (value.location.x - (pin.WIDTH / 2)) + 'px';
     pinBaloon.style.top = (value.location.y - pin.HEIGHT) + 'px';
+    pinBaloon.setAttribute('tabindex', 0);
     userAvatar.src = value.author.avatar;
     userAvatar.className = domElementsAttributs.IMG_CLASS;
     userAvatar.width = domElementsAttributs.IMG_WIDTH;
     userAvatar.height = domElementsAttributs.IMG_HEIGHT;
     pinBaloon.appendChild(userAvatar);
+
     domElements[index] = pinBaloon;
+
+    pinAddHandler(pinBaloon, index);
   });
 
   return domElements;
-};
+}
 
-var appendDomElements = function (domElements) {
+function appendDomElements(domElements) {
   var parent = document.querySelector('.tokyo__pin-map');
   var fragment = document.createDocumentFragment();
   for (var i = 0; i < domElements.length; i++) {
     fragment.appendChild(domElements[i]);
   }
   parent.appendChild(fragment);
-};
+}
 
-var getLodgeType = function (type) {
-  var LODGE_TYPE = {
-    flat: 'Квартира',
-    house: 'Дом',
-    bungalo: 'Бунгало'
-  };
-  return LODGE_TYPE[type];
-};
-
-var createFeaturesElements = function (currentElement, features) {
+function createFeaturesElements(currentElement, features) {
   var parent = currentElement.querySelector('.lodge__features');
 
   features.forEach(function (value) {
@@ -157,9 +172,9 @@ var createFeaturesElements = function (currentElement, features) {
     parent.appendChild(span);
   });
 
-};
+}
 
-var createElementFromTemplate = function (ads) {
+function createDialogPanelFromTemplate(ads) {
   var template = document.querySelector('#lodge-template').content.cloneNode(true);
 
   template.querySelector('.lodge__title').textContent = ads.offer.title;
@@ -178,30 +193,89 @@ var createElementFromTemplate = function (ads) {
 
   createFeaturesElements(template, ads.offer.features);
 
-  return template;
-};
+  templateInsertDom(template);
+}
 
-var templateReplace = function (elementFromTemplate) {
+function templateInsertDom(elementFromTemplate) {
   var oldNode = document.querySelector('.dialog__panel');
   oldNode.parentNode.replaceChild(elementFromTemplate, oldNode);
-};
+}
 
-var createArrayIndexes = function (maxValue) {
+function createArrayIndexes(maxValue) {
   var newArrayIndexes = [];
   for (var i = 0; i < maxValue; i++) {
     newArrayIndexes[i] = i;
   }
   return newArrayIndexes;
-};
+}
 
-var drawElements = function (ads) {
+function drawPins(ads) {
   var domElements = createDomElements(ads);
   appendDomElements(domElements);
-  var elementFromTemplate = createElementFromTemplate(ads[0]);
-  templateReplace(elementFromTemplate);
-};
+}
 
-var arrayIndexesAvatars = createArrayIndexes(MAIN_ARRAY_LENGHT);
-var arrayIndexesTitle = createArrayIndexes(meanings.TITLES.length);
+function hideDialog() {
+  document.querySelector('.dialog').classList.add('hidden');
+  togglePin();
+}
+
+function showElement(element) {
+  element.classList.remove('hidden');
+}
+
+
+function togglePin(currentPin) {
+  var activeElement = document.querySelector('.pin--active');
+  if (activeElement) {
+    activeElement.classList.remove('pin--active');
+  }
+  if (currentPin) {
+    currentPin.classList.add('pin--active');
+  }
+}
+
+function showDialog(element, index) {
+  togglePin(element);
+  createDialogPanelFromTemplate(ads[index]);
+  showElement(document.querySelector('.dialog'));
+}
+
+
+function htmlKeydownHandler(evt) {
+  var dialog = document.querySelector('.dialog');
+  if (evt.keyCode === keyCode.ESC && !dialog.classList.contains('hidden')) {
+    hideDialog();
+  }
+}
+
+function addDialogCloseHandler() {
+  var element = document.querySelector('.dialog__close');
+  element.addEventListener('click', dialogCloseClickHandler);
+  document.querySelector('html').addEventListener('keydown',
+      htmlKeydownHandler);
+}
+
+function pinAddHandler(pin, index) {
+  pin.addEventListener('click', pinClickHandler.bind(null, index));
+  pin.addEventListener('keydown', pinKeydownHandler.bind(null, index));
+}
+
+function pinClickHandler(index, evt) {
+  showDialog(evt.currentTarget, index);
+}
+
+function pinKeydownHandler(index, evt) {
+  if (evt.keyCode === keyCode.ENTER) {
+    showDialog(evt.currentTarget, index);
+  }
+}
+
+function dialogCloseClickHandler(evt) {
+  evt.preventDefault();
+  hideDialog();
+}
+
+hideDialog();
+addDialogCloseHandler();
 var ads = createArray();
-drawElements(ads);
+drawPins(ads);
