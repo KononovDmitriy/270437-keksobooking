@@ -225,12 +225,17 @@ function showElement(element) {
 
 
 function togglePin(currentPin) {
-  if (activePin) {
-    activePin.classList.remove('pin--active');
+  // if (activePin) {
+  //   activePin.classList.remove('pin--active');
+  // }
+
+  var activeElement = document.querySelector('.pin--active');
+  if (activeElement) {
+    activeElement.classList.remove('pin--active');
   }
   if (currentPin) {
     currentPin.classList.add('pin--active');
-    activePin = currentPin;
+    // activePin = currentPin;
   }
 }
 
