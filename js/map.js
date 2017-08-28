@@ -31,6 +31,16 @@ var meanings = {
 var ARRAY_INIT_VALUE = 0;
 var MAIN_ARRAY_LENGHT = 8;
 
+var validForm = {
+  HEAD_MIN_LENGTH: 30,
+  HEAD_MAX_LENGTH: 100,
+  PRICE_MAX: 1000000,
+  PRICE_BUNGALO: 0,
+  PRICE_FLAT: 1000,
+  PRICE_HOUSE: 5000,
+  PRICE_PALACE: 10000
+};
+
 var arrayIndexesAvatars = createArrayIndexes(MAIN_ARRAY_LENGHT);
 var arrayIndexesTitle = createArrayIndexes(meanings.TITLES.length);
 
@@ -272,7 +282,42 @@ function dialogCloseClickHandler(evt) {
   hideDialog();
 }
 
+function timeInputHandler(evt) {
+  var elementId = (evt.currentTarget.id === 'timein') ? '#timeout' : '#timein';
+  document.querySelector(elementId).value = evt.currentTarget.value;
+}
+
+function typeInputHandler(evt) {
+  var minPrice;
+  switch(evt.currentTarget.value) {
+    case 'bungalo':
+      minPrice = validForm.PRICE_BUNGALO;
+      break;
+    case 'flat':
+      minPrice = validForm.PRICE_FLAT;
+      break;
+    case 'house':
+      minPrice = validForm.PRICE_HOUSE;
+      break;
+    case 'palace':
+      minPrice = validForm.PRICE_PALACE;
+      break;
+  }
+  document.querySelector('#price').setAttribute('placeholder', minPrice);
+}
+
+
+
+function validateForm() {
+  // хэндлер на тип
+  document.querySelector('#type').addEventListener('input', typeInputHandler);
+  // хэндлеры на время
+  document.querySelector('#timein').addEventListener('input', timeInputHandler);
+  document.querySelector('#timeout').addEventListener('input', timeInputHandler);
+}
+
 hideDialog();
 addDialogCloseHandler();
 var ads = createArray();
 drawPins(ads);
+validateForm();
