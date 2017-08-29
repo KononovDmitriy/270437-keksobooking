@@ -289,7 +289,7 @@ function timeInputHandler(evt) {
 
 function typeInputHandler(evt) {
   var minPrice;
-  switch(evt.currentTarget.value) {
+  switch (evt.currentTarget.value) {
     case 'bungalo':
       minPrice = validForm.PRICE_BUNGALO;
       break;
@@ -306,18 +306,135 @@ function typeInputHandler(evt) {
   document.querySelector('#price').setAttribute('placeholder', minPrice);
 }
 
+function roomNumberInputHandler(evt) {
+  var guests = document.querySelectorAll('#capacity option');
+  guests.forEach(function (value) {
+    value.removeAttribute('disabled');
+  });
+  if (evt.currentTarget.value === '100') {
+    for (var i = guests.length - 2; i >= 0; i--) {
+      guests[i].setAttribute('disabled', '');
+    }
+    guests[0].parentNode.value = 0;
+  } else {
+    guests[guests.length - 1].setAttribute('disabled', '');
+    for (i = 0; i <= (guests.length - 2) - evt.currentTarget.value; i++) {
+      guests[i].setAttribute('disabled', '');
+    }
+    guests[0].parentNode.value = evt.currentTarget.value;
+  }
+}
 
+function titleInputHandler(evt) {
+  evt.currentTarget.setCustomValidity('');
+}
+
+function addressInputHandler(evt) {
+  evt.currentTarget.setCustomValidity('');
+}
+
+function priceInputHandler(evt) {
+  evt.currentTarget.setCustomValidity('');
+}
+
+function noticeFormSubmitHandler(evt) {
+  var form = document.querySelector('.notice__form');
+  evt.preventDefault();
+
+  console.log(validateForm());
+
+  if (validateForm()) {
+    form.setAttribute('action', 'https://1510.dump.academy/keksobooking');
+    form.submit();
+  }
+}
 
 function validateForm() {
+  var title = validateTitle();
+  var address = validateAddress();
+  var prace = validatePrace();
+  return title && address && prace;
+}
+
+function validateTitle() {
+  var title = document.querySelector('#title');
+  if (!title.value) {
+    title.setCustomValidity('Заполните поле!');
+    return false;
+  }
+  if (title.value.length < validForm.HEAD_MIN_LENGTH) {
+    title.setCustomValidity('Минимальная длинна поля ' + validForm.HEAD_MIN_LENGTH + ' символов!');
+    return false;
+  }
+  if (title.value.length >= validForm.HEAD_MAX_LENGTH) {
+    title.setCustomValidity('Максимальная длинна поля ' + validForm.HEAD_MAX_LENGTH + ' символов!');
+    return false;
+  }
+  return true;
+}
+
+function validateAddress() {
+  var address = document.querySelector('#address');
+  if (!address.value) {
+    address.setCustomValidity('Заполните поле!');
+    return false;
+  }
+  return true;
+}
+
+function validatePrace() {
+  var type = document.querySelector('#type');
+  var price = document.querySelector('#price');
+  var minPrice;
+  switch (type.value) {
+    case 'bungalo':
+      minPrice = validForm.PRICE_BUNGALO;
+      break;
+    case 'flat':
+      minPrice = validForm.PRICE_FLAT;
+      break;
+    case 'house':
+      minPrice = validForm.PRICE_HOUSE;
+      break;
+    case 'palace':
+      minPrice = validForm.PRICE_PALACE;
+      break;
+  }
+  if (price.value < minPrice) {
+    price.setCustomValidity('Минимальная цена ' + minPrice);
+    return false;
+  }
+  if (price.value > validForm.PRICE_MAX) {
+    price.setCustomValidity('Максимальная цена ' + minPrice);
+    return false;
+  }
+  return true;
+}
+
+function addFormHandlers() {
+  // хэндлер на отправку
+  document.querySelector('.notice__form').addEventListener('submit', noticeFormSubmitHandler);
   // хэндлер на тип
   document.querySelector('#type').addEventListener('input', typeInputHandler);
   // хэндлеры на время
   document.querySelector('#timein').addEventListener('input', timeInputHandler);
   document.querySelector('#timeout').addEventListener('input', timeInputHandler);
+  // хэндлер на комнаты
+  document.querySelector('#room_number').addEventListener('input', roomNumberInputHandler);
+  // хэндлер на заголовок
+  document.querySelector('#title').addEventListener('input', titleInputHandler);
+  // хэндлер на адрес
+  document.querySelector('#address').addEventListener('input', addressInputHandler);
+  // хэндлер на цену
+  document.querySelector('#price').addEventListener('input', priceInputHandler);
 }
+
+// function initType() {
+
+// }
 
 hideDialog();
 addDialogCloseHandler();
 var ads = createArray();
 drawPins(ads);
-validateForm();
+addFormHandlers();
