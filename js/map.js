@@ -291,6 +291,18 @@ function dialogCloseClickHandler(evt) {
   hideDialog();
 }
 
+
+function addFormHandlers(form) {
+  form.addEventListener('submit', noticeFormSubmitHandler);
+  form.querySelector('#type').addEventListener('input', typeInputHandler);
+  form.querySelector('#timein').addEventListener('input', timeInputHandler);
+  form.querySelector('#timeout').addEventListener('input', timeInputHandler);
+  form.querySelector('#room_number').addEventListener('input', roomNumberInputHandler);
+  form.querySelector('#title').addEventListener('input', elementInputHandler);
+  form.querySelector('#address').addEventListener('input', elementInputHandler);
+  form.querySelector('#price').addEventListener('input', elementInputHandler);
+}
+
 function timeInputHandler(evt) {
   validateTime(evt.currentTarget);
 }
@@ -387,23 +399,16 @@ function validatePrace() {
 }
 
 function validateTypes(type) {
-  document.querySelector('#price').setAttribute('placeholder', getMinPrace(type));
+  var price = document.querySelector('#price');
+  var minPrice = getMinPrace(type);
+  price.setAttribute('placeholder', minPrice);
+  price.setAttribute('min', minPrice);
+
 }
 
 function validateTime(time) {
   var elementId = (time.id === 'timein') ? '#timeout' : '#timein';
   document.querySelector(elementId).value = time.value;
-}
-
-function addFormHandlers() {
-  document.querySelector('.notice__form').addEventListener('submit', noticeFormSubmitHandler);
-  document.querySelector('#type').addEventListener('input', typeInputHandler);
-  document.querySelector('#timein').addEventListener('input', timeInputHandler);
-  document.querySelector('#timeout').addEventListener('input', timeInputHandler);
-  document.querySelector('#room_number').addEventListener('input', roomNumberInputHandler);
-  document.querySelector('#title').addEventListener('input', elementInputHandler);
-  document.querySelector('#address').addEventListener('input', elementInputHandler);
-  document.querySelector('#price').addEventListener('input', elementInputHandler);
 }
 
 function getMinPrace(type) {
@@ -425,14 +430,27 @@ function getMinPrace(type) {
   return minPrice;
 }
 
-function initType() {
-  validateGuests(document.querySelector('#room_number'));
-  validateTypes(document.querySelector('#type'));
+function initializeForm(form) {
+  validateHtml(form);
+  validateTypes(form.querySelector('#type'));
+  validateGuests(form.querySelector('#room_number'));
+}
+
+function validateHtml(form) {
+  var title = form.querySelector('#title');
+  var price = form.querySelector('#price');
+  title.setAttribute('required', '');
+  title.setAttribute('minlength', validForm.HEAD_MIN_LENGTH);
+  title.setAttribute('maxlength', validForm.HEAD_MAX_LENGTH);
+  form.querySelector('#address').setAttribute('required', '');
+  price.setAttribute('required', '');
+  price.setAttribute('max', validForm.PRICE_MAX);
 }
 
 hideDialog();
 addDialogCloseHandler();
 var ads = createArray();
 drawPins(ads);
-initType();
-addFormHandlers();
+var noticeForm = document.querySelector('.notice__form');
+initializeForm(noticeForm);
+addFormHandlers(noticeForm);
