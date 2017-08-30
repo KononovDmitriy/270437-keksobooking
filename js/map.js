@@ -41,6 +41,15 @@ var validForm = {
   PRICE_PALACE: 10000
 };
 
+var messages = {
+  REQUIRED: 'Заполните поле!',
+  MIN_LENGTH_START: 'Минимальная длинна поля ',
+  MAX_LENGTH_START: 'Максимальная длинна поля ',
+  LENGTH_END: ' символов!',
+  MIN_PRICE: 'Минимальная цена ',
+  MAX_PRICE: 'Максимальная цена '
+};
+
 var arrayIndexesAvatars = createArrayIndexes(MAIN_ARRAY_LENGHT);
 var arrayIndexesTitle = createArrayIndexes(meanings.TITLES.length);
 
@@ -283,68 +292,30 @@ function dialogCloseClickHandler(evt) {
 }
 
 function timeInputHandler(evt) {
-  var elementId = (evt.currentTarget.id === 'timein') ? '#timeout' : '#timein';
-  document.querySelector(elementId).value = evt.currentTarget.value;
+  validateTime(evt.currentTarget);
 }
 
 function typeInputHandler(evt) {
-  var minPrice;
-  switch (evt.currentTarget.value) {
-    case 'bungalo':
-      minPrice = validForm.PRICE_BUNGALO;
-      break;
-    case 'flat':
-      minPrice = validForm.PRICE_FLAT;
-      break;
-    case 'house':
-      minPrice = validForm.PRICE_HOUSE;
-      break;
-    case 'palace':
-      minPrice = validForm.PRICE_PALACE;
-      break;
-  }
-  document.querySelector('#price').setAttribute('placeholder', minPrice);
+  validateTypes(evt.currentTarget);
 }
 
 function roomNumberInputHandler(evt) {
-  var guests = document.querySelectorAll('#capacity option');
-  guests.forEach(function (value) {
-    value.removeAttribute('disabled');
-  });
-  if (evt.currentTarget.value === '100') {
-    for (var i = guests.length - 2; i >= 0; i--) {
-      guests[i].setAttribute('disabled', '');
-    }
-    guests[0].parentNode.value = 0;
-  } else {
-    guests[guests.length - 1].setAttribute('disabled', '');
-    for (i = 0; i <= (guests.length - 2) - evt.currentTarget.value; i++) {
-      guests[i].setAttribute('disabled', '');
-    }
-    guests[0].parentNode.value = evt.currentTarget.value;
-  }
+  validateGuests(evt.currentTarget);
 }
 
-function titleInputHandler(evt) {
-  evt.currentTarget.setCustomValidity('');
-}
-
-function addressInputHandler(evt) {
-  evt.currentTarget.setCustomValidity('');
-}
-
-function priceInputHandler(evt) {
+function elementInputHandler(evt) {
   evt.currentTarget.setCustomValidity('');
 }
 
 function noticeFormSubmitHandler(evt) {
+  var formData = {
+    ACTION: 'https://1510.dump.academy/keksobooking'
+  };
+
   var form = document.querySelector('.notice__form');
   evt.preventDefault();
-
-  console.log(validateForm());
-
   if (validateForm()) {
-    form.setAttribute('action', 'https://1510.dump.academy/keksobooking');
+    form.setAttribute('action', formData.ACTION);
     form.submit();
   }
 }
@@ -356,18 +327,37 @@ function validateForm() {
   return title && address && prace;
 }
 
+function validateGuests(roomNumber) {
+  var guests = document.querySelectorAll('#capacity option');
+  guests.forEach(function (value) {
+    value.removeAttribute('disabled');
+  });
+  if (roomNumber.value === '100') {
+    for (var i = guests.length - 2; i >= 0; i--) {
+      guests[i].setAttribute('disabled', '');
+    }
+    guests[0].parentNode.value = 0;
+  } else {
+    guests[guests.length - 1].setAttribute('disabled', '');
+    for (i = 0; i <= (guests.length - 2) - roomNumber.value; i++) {
+      guests[i].setAttribute('disabled', '');
+    }
+    guests[0].parentNode.value = roomNumber.value;
+  }
+}
+
 function validateTitle() {
   var title = document.querySelector('#title');
   if (!title.value) {
-    title.setCustomValidity('Заполните поле!');
+    title.setCustomValidity(messages.REQUIRED);
     return false;
   }
   if (title.value.length < validForm.HEAD_MIN_LENGTH) {
-    title.setCustomValidity('Минимальная длинна поля ' + validForm.HEAD_MIN_LENGTH + ' символов!');
+    title.setCustomValidity(messages.MIN_LENGTH_START + validForm.HEAD_MIN_LENGTH + messages.LENGTH_END);
     return false;
   }
   if (title.value.length >= validForm.HEAD_MAX_LENGTH) {
-    title.setCustomValidity('Максимальная длинна поля ' + validForm.HEAD_MAX_LENGTH + ' символов!');
+    title.setCustomValidity(messages.MAX_LENGTH_START + validForm.HEAD_MAX_LENGTH + messages.LENGTH_END);
     return false;
   }
   return true;
@@ -376,15 +366,47 @@ function validateTitle() {
 function validateAddress() {
   var address = document.querySelector('#address');
   if (!address.value) {
-    address.setCustomValidity('Заполните поле!');
+    address.setCustomValidity(messages.REQUIRED);
     return false;
   }
   return true;
 }
 
 function validatePrace() {
-  var type = document.querySelector('#type');
   var price = document.querySelector('#price');
+  var minPrice = getMinPrace(document.querySelector('#type'));
+  if (price.value < minPrice) {
+    price.setCustomValidity(messages.MIN_PRICE + minPrice);
+    return false;
+  }
+  if (price.value > validForm.PRICE_MAX) {
+    price.setCustomValidity(messages.MAX_PRICE + minPrice);
+    return false;
+  }
+  return true;
+}
+
+function validateTypes(type) {
+  document.querySelector('#price').setAttribute('placeholder', getMinPrace(type));
+}
+
+function validateTime(time) {
+  var elementId = (time.id === 'timein') ? '#timeout' : '#timein';
+  document.querySelector(elementId).value = time.value;
+}
+
+function addFormHandlers() {
+  document.querySelector('.notice__form').addEventListener('submit', noticeFormSubmitHandler);
+  document.querySelector('#type').addEventListener('input', typeInputHandler);
+  document.querySelector('#timein').addEventListener('input', timeInputHandler);
+  document.querySelector('#timeout').addEventListener('input', timeInputHandler);
+  document.querySelector('#room_number').addEventListener('input', roomNumberInputHandler);
+  document.querySelector('#title').addEventListener('input', elementInputHandler);
+  document.querySelector('#address').addEventListener('input', elementInputHandler);
+  document.querySelector('#price').addEventListener('input', elementInputHandler);
+}
+
+function getMinPrace(type) {
   var minPrice;
   switch (type.value) {
     case 'bungalo':
@@ -400,41 +422,17 @@ function validatePrace() {
       minPrice = validForm.PRICE_PALACE;
       break;
   }
-  if (price.value < minPrice) {
-    price.setCustomValidity('Минимальная цена ' + minPrice);
-    return false;
-  }
-  if (price.value > validForm.PRICE_MAX) {
-    price.setCustomValidity('Максимальная цена ' + minPrice);
-    return false;
-  }
-  return true;
+  return minPrice;
 }
 
-function addFormHandlers() {
-  // хэндлер на отправку
-  document.querySelector('.notice__form').addEventListener('submit', noticeFormSubmitHandler);
-  // хэндлер на тип
-  document.querySelector('#type').addEventListener('input', typeInputHandler);
-  // хэндлеры на время
-  document.querySelector('#timein').addEventListener('input', timeInputHandler);
-  document.querySelector('#timeout').addEventListener('input', timeInputHandler);
-  // хэндлер на комнаты
-  document.querySelector('#room_number').addEventListener('input', roomNumberInputHandler);
-  // хэндлер на заголовок
-  document.querySelector('#title').addEventListener('input', titleInputHandler);
-  // хэндлер на адрес
-  document.querySelector('#address').addEventListener('input', addressInputHandler);
-  // хэндлер на цену
-  document.querySelector('#price').addEventListener('input', priceInputHandler);
+function initType() {
+  validateGuests(document.querySelector('#room_number'));
+  validateTypes(document.querySelector('#type'));
 }
-
-// function initType() {
-
-// }
 
 hideDialog();
 addDialogCloseHandler();
 var ads = createArray();
 drawPins(ads);
+initType();
 addFormHandlers();
