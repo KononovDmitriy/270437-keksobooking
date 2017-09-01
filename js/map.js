@@ -50,8 +50,26 @@ var messages = {
   MAX_PRICE: 'Максимальная цена '
 };
 
+var PRICE = {
+  'flat': 1000,
+  'bungalo': 0,
+  'house': 5000,
+  'palace': 10000
+};
+
 var arrayIndexesAvatars = createArrayIndexes(MAIN_ARRAY_LENGHT);
 var arrayIndexesTitle = createArrayIndexes(meanings.TITLES.length);
+
+var noticeForm = document.querySelector('.notice__form');
+var buildingType = noticeForm.querySelector('#type');
+var timeIn = noticeForm.querySelector('#timein');
+var timeOut = noticeForm.querySelector('#timeout');
+var roomNumber = noticeForm.querySelector('#room_number');
+var title = noticeForm.querySelector('#title');
+var address = noticeForm.querySelector('#address');
+var price = noticeForm.querySelector('#price');
+var guests = noticeForm.querySelectorAll('#capacity option');
+
 
 function createArray() {
   var ads = [];
@@ -293,26 +311,26 @@ function dialogCloseClickHandler(evt) {
 
 
 function addFormHandlers(form) {
-  form.addEventListener('submit', noticeFormSubmitHandler);
-  form.querySelector('#type').addEventListener('input', typeInputHandler);
-  form.querySelector('#timein').addEventListener('input', timeInputHandler);
-  form.querySelector('#timeout').addEventListener('input', timeInputHandler);
-  form.querySelector('#room_number').addEventListener('input', roomNumberInputHandler);
-  form.querySelector('#title').addEventListener('input', elementInputHandler);
-  form.querySelector('#address').addEventListener('input', elementInputHandler);
-  form.querySelector('#price').addEventListener('input', elementInputHandler);
+  noticeForm.addEventListener('submit', noticeFormSubmitHandler);
+  buildingType.addEventListener('change', typeInputHandler);
+  timeIn.addEventListener('change', timeInputHandler);
+  timeOut.addEventListener('change', timeInputHandler);
+  roomNumber.addEventListener('change', roomNumberInputHandler);
+  title.addEventListener('change', elementInputHandler);
+  address.addEventListener('change', elementInputHandler);
+  price.addEventListener('change', elementInputHandler);
 }
 
 function timeInputHandler(evt) {
   validateTime(evt.currentTarget);
 }
 
-function typeInputHandler(evt) {
-  validateTypes(evt.currentTarget);
+function typeInputHandler() {
+  validateTypes();
 }
 
 function roomNumberInputHandler(evt) {
-  validateGuests(evt.currentTarget);
+  validateGuests();
 }
 
 function elementInputHandler(evt) {
@@ -324,23 +342,21 @@ function noticeFormSubmitHandler(evt) {
     ACTION: 'https://1510.dump.academy/keksobooking'
   };
 
-  var form = document.querySelector('.notice__form');
   evt.preventDefault();
   if (validateForm()) {
-    form.setAttribute('action', formData.ACTION);
-    form.submit();
+    noticeForm.setAttribute('action', formData.ACTION);
+    noticeForm.submit();
   }
 }
 
 function validateForm() {
   var title = validateTitle();
   var address = validateAddress();
-  var prace = validatePrace();
-  return title && address && prace;
+  var price = validatePrice();
+  return title && address && price;
 }
 
-function validateGuests(roomNumber) {
-  var guests = document.querySelectorAll('#capacity option');
+function validateGuests() {
   guests.forEach(function (value) {
     value.removeAttribute('disabled');
   });
@@ -359,7 +375,6 @@ function validateGuests(roomNumber) {
 }
 
 function validateTitle() {
-  var title = document.querySelector('#title');
   if (!title.value) {
     title.setCustomValidity(messages.REQUIRED);
     return false;
@@ -384,25 +399,21 @@ function validateAddress() {
   return true;
 }
 
-function validatePrace() {
-  var price = document.querySelector('#price');
-  var minPrice = getMinPrace(document.querySelector('#type'));
+function validatePrice() {
+  var minPrice = getMinPrice();
   if (price.value < minPrice) {
     price.setCustomValidity(messages.MIN_PRICE + minPrice);
     return false;
   }
   if (price.value > validForm.PRICE_MAX) {
-    price.setCustomValidity(messages.MAX_PRICE + minPrice);
+    price.setCustomValidity(messages.MAX_PRICE + validForm.MAX_PRICE);
     return false;
   }
   return true;
 }
 
-function validateTypes(type) {
-  var price = document.querySelector('#price');
-  var minPrice = getMinPrace(type);
-  price.setAttribute('placeholder', minPrice);
-  price.setAttribute('min', minPrice);
+function validateTypes() {
+  price.setAttribute('min', getMinPrice());
 
 }
 
@@ -411,38 +422,21 @@ function validateTime(time) {
   document.querySelector(elementId).value = time.value;
 }
 
-function getMinPrace(type) {
-  var minPrice;
-  switch (type.value) {
-    case 'bungalo':
-      minPrice = validForm.PRICE_BUNGALO;
-      break;
-    case 'flat':
-      minPrice = validForm.PRICE_FLAT;
-      break;
-    case 'house':
-      minPrice = validForm.PRICE_HOUSE;
-      break;
-    case 'palace':
-      minPrice = validForm.PRICE_PALACE;
-      break;
-  }
-  return minPrice;
+function getMinPrice() {
+  return PRICE[buildingType.value];
 }
 
-function initializeForm(form) {
-  validateHtml(form);
-  validateTypes(form.querySelector('#type'));
-  validateGuests(form.querySelector('#room_number'));
+function initializeForm() {
+  setHtmlAttributes();
+  validateTypes();
+  validateGuests();
 }
 
-function validateHtml(form) {
-  var title = form.querySelector('#title');
-  var price = form.querySelector('#price');
+function setHtmlAttributes() {
   title.setAttribute('required', '');
   title.setAttribute('minlength', validForm.HEAD_MIN_LENGTH);
   title.setAttribute('maxlength', validForm.HEAD_MAX_LENGTH);
-  form.querySelector('#address').setAttribute('required', '');
+  address.setAttribute('required', '');
   price.setAttribute('required', '');
   price.setAttribute('max', validForm.PRICE_MAX);
 }
@@ -451,6 +445,5 @@ hideDialog();
 addDialogCloseHandler();
 var ads = createArray();
 drawPins(ads);
-var noticeForm = document.querySelector('.notice__form');
-initializeForm(noticeForm);
-addFormHandlers(noticeForm);
+initializeForm();
+addFormHandlers();
