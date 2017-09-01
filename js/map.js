@@ -28,26 +28,18 @@ var meanings = {
     'conditioner']
 };
 
+var CAPACITY_NUMBERS = {
+  '1': ['1'],
+  '2': ['1', '2'],
+  '3': ['1', '2', '3'],
+  '100': ['0']
+};
+
 var ARRAY_INIT_VALUE = 0;
 var MAIN_ARRAY_LENGHT = 8;
 
 var validForm = {
-  HEAD_MIN_LENGTH: 30,
-  HEAD_MAX_LENGTH: 100,
   PRICE_MAX: 1000000,
-  PRICE_BUNGALO: 0,
-  PRICE_FLAT: 1000,
-  PRICE_HOUSE: 5000,
-  PRICE_PALACE: 10000
-};
-
-var messages = {
-  REQUIRED: 'Заполните поле!',
-  MIN_LENGTH_START: 'Минимальная длинна поля ',
-  MAX_LENGTH_START: 'Максимальная длинна поля ',
-  LENGTH_END: ' символов!',
-  MIN_PRICE: 'Минимальная цена ',
-  MAX_PRICE: 'Максимальная цена '
 };
 
 var PRICE = {
@@ -69,6 +61,7 @@ var title = noticeForm.querySelector('#title');
 var address = noticeForm.querySelector('#address');
 var price = noticeForm.querySelector('#price');
 var guests = noticeForm.querySelectorAll('#capacity option');
+var capacityField = document.querySelector('#capacity');
 
 
 function createArray() {
@@ -309,117 +302,94 @@ function dialogCloseClickHandler(evt) {
   hideDialog();
 }
 
-
-function addFormHandlers(form) {
+function addFormHandlers() {
   noticeForm.addEventListener('submit', noticeFormSubmitHandler);
-  buildingType.addEventListener('change', typeInputHandler);
-  timeIn.addEventListener('change', timeInputHandler);
-  timeOut.addEventListener('change', timeInputHandler);
-  roomNumber.addEventListener('change', roomNumberInputHandler);
-  title.addEventListener('change', elementInputHandler);
-  address.addEventListener('change', elementInputHandler);
-  price.addEventListener('change', elementInputHandler);
+  noticeForm.addEventListener('invalid', noticeFormInvalidHandler, true);
+  buildingType.addEventListener('change', typeChangeHandler);
+  timeIn.addEventListener('change', timeChangeHandler);
+  timeOut.addEventListener('change', timeChangeHandler);
+  roomNumber.addEventListener('change', roomNumberChangeHandler);
+  title.addEventListener('change', elementChangeHandler);
+  address.addEventListener('change', elementChangeHandler);
+  price.addEventListener('change', elementChangeHandler);
 }
 
-function timeInputHandler(evt) {
-  validateTime(evt.currentTarget);
+function timeChangeHandler(evt) {
+  var elementId = (evt.currentTarget.id === 'timein') ? '#timeout' : '#timein';
+  document.querySelector(elementId).value = evt.currentTarget.value;
 }
 
-function typeInputHandler() {
-  validateTypes();
+function typeChangeHandler() {
+  price.setAttribute('min', getMinPrice());
 }
 
-function roomNumberInputHandler(evt) {
-  validateGuests();
+function roomNumberChangeHandler() {
+  for (var i = 0; i < guests.length; i++) {
+    var values = CAPACITY_NUMBERS[roomNumber.value];
+    guests[i].disabled = !values.includes(guests[i].value);
+    if (!guests[i].disabled) {
+      capacityField.value = guests[i].value;
+    }
+  }
 }
 
-function elementInputHandler(evt) {
+function elementChangeHandler(evt) {
   evt.currentTarget.setCustomValidity('');
 }
 
 function noticeFormSubmitHandler(evt) {
-  var formData = {
-    ACTION: 'https://1510.dump.academy/keksobooking'
-  };
-
   evt.preventDefault();
   if (validateForm()) {
-    noticeForm.setAttribute('action', formData.ACTION);
     noticeForm.submit();
   }
 }
 
-function validateForm() {
-  var title = validateTitle();
-  var address = validateAddress();
-  var price = validatePrice();
-  return title && address && price;
+function noticeFormInvalidHandler() {
+  validateTitle();
+  validateAddress();
+  validatePrice();
+  for (var i = 0; i < noticeForm.elements.length; i++) {
+    if (!noticeForm.elements[i].validity.valid) {
+      noticeForm.elements[i].setAttribute('style', 'border: 2px solid red');
+    }
+  }
 }
 
-function validateGuests() {
-  guests.forEach(function (value) {
-    value.removeAttribute('disabled');
-  });
-  if (roomNumber.value === '100') {
-    for (var i = guests.length - 2; i >= 0; i--) {
-      guests[i].setAttribute('disabled', '');
-    }
-    guests[0].parentNode.value = 0;
-  } else {
-    guests[guests.length - 1].setAttribute('disabled', '');
-    for (i = 0; i <= (guests.length - 2) - roomNumber.value; i++) {
-      guests[i].setAttribute('disabled', '');
-    }
-    guests[0].parentNode.value = roomNumber.value;
-  }
+function validateForm() {
+  return validateTitle() && validateAddress() && validatePrice();
 }
 
 function validateTitle() {
-  if (!title.value) {
-    title.setCustomValidity(messages.REQUIRED);
-    return false;
-  }
-  if (title.value.length < validForm.HEAD_MIN_LENGTH) {
-    title.setCustomValidity(messages.MIN_LENGTH_START + validForm.HEAD_MIN_LENGTH + messages.LENGTH_END);
-    return false;
-  }
-  if (title.value.length >= validForm.HEAD_MAX_LENGTH) {
-    title.setCustomValidity(messages.MAX_LENGTH_START + validForm.HEAD_MAX_LENGTH + messages.LENGTH_END);
+  if (!title.validity.valid) {
+    title.setCustomValidity('Длинна должна быть больше 30 и меньше100 символов!');
     return false;
   }
   return true;
 }
 
 function validateAddress() {
-  var address = document.querySelector('#address');
   if (!address.value) {
-    address.setCustomValidity(messages.REQUIRED);
+    address.setCustomValidity('Заполните поле!');
     return false;
   }
   return true;
 }
 
 function validatePrice() {
+  if (price.value === '') {
+    price.setCustomValidity('Заполните поле! ');
+    return false;
+  }
   var minPrice = getMinPrice();
   if (price.value < minPrice) {
-    price.setCustomValidity(messages.MIN_PRICE + minPrice);
+    price.setCustomValidity('Минимальная цена ' + minPrice);
     return false;
   }
   if (price.value > validForm.PRICE_MAX) {
-    price.setCustomValidity(messages.MAX_PRICE + validForm.MAX_PRICE);
+    price.setCustomValidity('Максимальная цена ' + validForm.MAX_PRICE);
     return false;
   }
   return true;
-}
-
-function validateTypes() {
-  price.setAttribute('min', getMinPrice());
-
-}
-
-function validateTime(time) {
-  var elementId = (time.id === 'timein') ? '#timeout' : '#timein';
-  document.querySelector(elementId).value = time.value;
 }
 
 function getMinPrice() {
@@ -427,18 +397,8 @@ function getMinPrice() {
 }
 
 function initializeForm() {
-  setHtmlAttributes();
-  validateTypes();
-  validateGuests();
-}
-
-function setHtmlAttributes() {
-  title.setAttribute('required', '');
-  title.setAttribute('minlength', validForm.HEAD_MIN_LENGTH);
-  title.setAttribute('maxlength', validForm.HEAD_MAX_LENGTH);
-  address.setAttribute('required', '');
-  price.setAttribute('required', '');
-  price.setAttribute('max', validForm.PRICE_MAX);
+  typeChangeHandler();
+  roomNumberChangeHandler();
 }
 
 hideDialog();
