@@ -38,10 +38,6 @@ var CAPACITY_NUMBERS = {
 var ARRAY_INIT_VALUE = 0;
 var MAIN_ARRAY_LENGHT = 8;
 
-var validForm = {
-  PRICE_MAX: 1000000,
-};
-
 var PRICE = {
   'flat': 1000,
   'bungalo': 0,
@@ -62,7 +58,6 @@ var address = noticeForm.querySelector('#address');
 var price = noticeForm.querySelector('#price');
 var guests = noticeForm.querySelectorAll('#capacity option');
 var capacityField = document.querySelector('#capacity');
-
 
 function createArray() {
   var ads = [];
@@ -199,7 +194,6 @@ function createFeaturesElements(currentElement, features) {
     span.className = 'feature__image feature__image--' + value;
     parent.appendChild(span);
   });
-
 }
 
 function createDialogPanelFromTemplate(ads) {
@@ -309,96 +303,73 @@ function addFormHandlers() {
   timeIn.addEventListener('change', timeChangeHandler);
   timeOut.addEventListener('change', timeChangeHandler);
   roomNumber.addEventListener('change', roomNumberChangeHandler);
-  title.addEventListener('change', elementChangeHandler);
-  address.addEventListener('change', elementChangeHandler);
-  price.addEventListener('change', elementChangeHandler);
 }
 
 function timeChangeHandler(evt) {
   var elementId = (evt.currentTarget.id === 'timein') ? '#timeout' : '#timein';
-  document.querySelector(elementId).value = evt.currentTarget.value;
+  noticeForm.querySelector(elementId).value = evt.currentTarget.value;
 }
 
 function typeChangeHandler() {
-  price.setAttribute('min', getMinPrice());
+  typeSetMinValue();
 }
 
 function roomNumberChangeHandler() {
-  for (var i = 0; i < guests.length; i++) {
-    var values = CAPACITY_NUMBERS[roomNumber.value];
-    guests[i].disabled = !values.includes(guests[i].value);
-    if (!guests[i].disabled) {
-      capacityField.value = guests[i].value;
-    }
-  }
-}
-
-function elementChangeHandler(evt) {
-  evt.currentTarget.setCustomValidity('');
+  choiceNumberGuests();
 }
 
 function noticeFormSubmitHandler(evt) {
   evt.preventDefault();
+
   if (validateForm()) {
     noticeForm.submit();
+    noticeForm.reset();
+    removeInvalidBorder();
+    initializeForm();
   }
 }
 
 function noticeFormInvalidHandler() {
-  validateTitle();
-  validateAddress();
-  validatePrice();
-  for (var i = 0; i < noticeForm.elements.length; i++) {
-    if (!noticeForm.elements[i].validity.valid) {
-      noticeForm.elements[i].setAttribute('style', 'border: 2px solid red');
+  var elements = noticeForm.querySelectorAll('input:not([type="checkbox"])');
+  removeInvalidBorder();
+
+  elements.forEach(function (element) {
+    if (!element.validity.valid) {
+      element.setAttribute('style', 'border: 2px solid red');
     }
-  }
+  });
+}
+
+function typeSetMinValue() {
+  price.setAttribute('min', PRICE[buildingType.value]);
+}
+
+function choiceNumberGuests() {
+  var values = CAPACITY_NUMBERS[roomNumber.value];
+
+  guests.forEach(function (element) {
+    element.disabled = !values.includes(element.value);
+
+    if (!element.disabled) {
+      capacityField.value = element.value;
+    }
+  });
+}
+
+function removeInvalidBorder() {
+  var elements = noticeForm.querySelectorAll('[style=\'border: 2px solid red\']');
+  elements.forEach(function (element) {
+    element.removeAttribute('style', 'border: 2px solid red');
+  });
 }
 
 function validateForm() {
-  return validateTitle() && validateAddress() && validatePrice();
-}
-
-function validateTitle() {
-  if (!title.validity.valid) {
-    title.setCustomValidity('Длинна должна быть больше 30 и меньше100 символов!');
-    return false;
-  }
-  return true;
-}
-
-function validateAddress() {
-  if (!address.value) {
-    address.setCustomValidity('Заполните поле!');
-    return false;
-  }
-  return true;
-}
-
-function validatePrice() {
-  if (price.value === '') {
-    price.setCustomValidity('Заполните поле! ');
-    return false;
-  }
-  var minPrice = getMinPrice();
-  if (price.value < minPrice) {
-    price.setCustomValidity('Минимальная цена ' + minPrice);
-    return false;
-  }
-  if (price.value > validForm.PRICE_MAX) {
-    price.setCustomValidity('Максимальная цена ' + validForm.MAX_PRICE);
-    return false;
-  }
-  return true;
-}
-
-function getMinPrice() {
-  return PRICE[buildingType.value];
+  return title.validity.valid && address.validity.valid && price.validity.valid;
 }
 
 function initializeForm() {
-  typeChangeHandler();
-  roomNumberChangeHandler();
+  typeSetMinValue();
+  choiceNumberGuests();
 }
 
 hideDialog();
