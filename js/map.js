@@ -323,16 +323,11 @@ function noticeFormSubmitHandler(evt) {
 
   if (validateForm()) {
     noticeForm.submit();
-    toggleInvalidBorder();
     noticeForm.reset();
   }
 }
 
 function noticeFormInvalidHandler() {
-  toggleInvalidBorder();
-}
-
-function toggleInvalidBorder() {
   var elements = noticeForm.querySelectorAll('input:not([type="checkbox"])');
 
   elements.forEach(function (element) {
