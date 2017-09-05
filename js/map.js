@@ -323,20 +323,20 @@ function noticeFormSubmitHandler(evt) {
 
   if (validateForm()) {
     noticeForm.submit();
+    toggleInvalidBorder();
     noticeForm.reset();
-    removeInvalidBorder();
-    initializeForm();
   }
 }
 
 function noticeFormInvalidHandler() {
+  toggleInvalidBorder();
+}
+
+function toggleInvalidBorder() {
   var elements = noticeForm.querySelectorAll('input:not([type="checkbox"])');
-  removeInvalidBorder();
 
   elements.forEach(function (element) {
-    if (!element.validity.valid) {
-      element.setAttribute('style', 'border: 2px solid red');
-    }
+    element.classList.toggle('invalid', !element.validity.valid);
   });
 }
 
@@ -353,13 +353,6 @@ function choiceNumberGuests() {
     if (!element.disabled) {
       capacityField.value = element.value;
     }
-  });
-}
-
-function removeInvalidBorder() {
-  var elements = noticeForm.querySelectorAll('[style=\'border: 2px solid red\']');
-  elements.forEach(function (element) {
-    element.removeAttribute('style', 'border: 2px solid red');
   });
 }
 
