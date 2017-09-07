@@ -4,6 +4,12 @@
   var clickCollback;
   var keydownCollback;
 
+  var html = document.querySelector('html');
+  var offerDialog = document.querySelector('#offer-dialog');
+  var lodgeTemplate = document.querySelector('#lodge-template');
+  var dialogTitleImg = document.querySelector('.dialog__title img');
+  var dialogClose = document.querySelector('.dialog__close');
+
   function getLodgeType(type) {
     var LODGE_TYPE = {
       flat: 'Квартира',
@@ -24,7 +30,7 @@
   }
 
   function createDialogPanelFromTemplate(ads) {
-    var template = document.querySelector('#lodge-template').content.cloneNode(true);
+    var template = lodgeTemplate.content.cloneNode(true);
 
     template.querySelector('.lodge__title').textContent = ads.offer.title;
     template.querySelector('.lodge__address').textContent = ads.offer.address;
@@ -38,41 +44,42 @@
         'Заезд после ' + ads.offer.checkin + ', выезд до ' + ads.offer.checkout;
     template.querySelector('.lodge__description').textContent =
         ads.offer.description;
-    document.querySelector('.dialog__title img').src = ads.author.avatar;
+    dialogTitleImg.src = ads.author.avatar;
 
     createFeaturesElements(template, ads.offer.features);
-
     templateInsertDom(template);
   }
 
   function templateInsertDom(elementFromTemplate) {
-    var oldNode = document.querySelector('.dialog__panel');
-    oldNode.parentNode.replaceChild(elementFromTemplate, oldNode);
+    var dialogPanel = offerDialog.querySelector('.dialog__panel');
+    dialogPanel.parentNode.replaceChild(elementFromTemplate, dialogPanel);
   }
 
   function hideDialog() {
-    document.querySelector('.dialog').classList.add('hidden');
+    offerDialog.classList.add('hidden');
   }
 
-  function showElement(element) {
-    element.classList.remove('hidden');
+  function showElement() {
+    offerDialog.classList.remove('hidden');
   }
 
   function showDialog(ads, index) {
     createDialogPanelFromTemplate(ads[index]);
-    showElement(document.querySelector('.dialog'));
+    showElement();
   }
 
 
   function htmlKeydownHandler(evt) {
-    var dialog = document.querySelector('.dialog');
-
+    if (!offerDialog.classList.contains('hidden')) {
+      keydownCollback(evt.keyCode);
+    }
   }
 
-  function addDialogCloseHandler() {
-    var element = document.querySelector('.dialog__close');
-    element.addEventListener('click', dialogCloseClickHandler);
-    document.querySelector('html').addEventListener('keydown',
+  function addDialogCloseHandler(extClickCollback, extKeydownCollback) {
+    clickCollback = extClickCollback;
+    keydownCollback = extKeydownCollback;
+    dialogClose.addEventListener('click', dialogCloseClickHandler);
+    html.addEventListener('keydown',
         htmlKeydownHandler);
   }
 
@@ -83,7 +90,8 @@
 
   window.card = {
     showDialog: showDialog,
-    hideDialog: hideDialog
+    hideDialog: hideDialog,
+    addDialogCloseHandler: addDialogCloseHandler
   };
 })();
 

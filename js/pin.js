@@ -5,6 +5,8 @@
   var clickCollback;
   var keydownCollback;
 
+  var tokyoPinMap = document.querySelector('.tokyo__pin-map');
+
   function createDomElements(ads) {
     var domElementsAttributs = {
       DIV_CLASS: 'pin',
@@ -41,12 +43,11 @@
   }
 
   function appendDomElements(domElements) {
-    var parent = document.querySelector('.tokyo__pin-map');
     var fragment = document.createDocumentFragment();
     for (var i = 0; i < domElements.length; i++) {
       fragment.appendChild(domElements[i]);
     }
-    parent.appendChild(fragment);
+    tokyoPinMap.appendChild(fragment);
   }
 
   function drawPins(ads, extClickCollback, extKeydownCollback) {
@@ -62,15 +63,15 @@
   }
 
   function pinClickHandler(index, evt) {
-    clickCollback(index, evt.currentTarget, evt.keyCode);
+    clickCollback(index, evt.currentTarget);
   }
 
   function pinKeydownHandler(index, evt) {
-    keydownCollback(index, evt.currentTarget);
+    keydownCollback(index, evt.currentTarget, evt.keyCode);
   }
 
   function togglePin(currentPin) {
-    var activeElement = document.querySelector('.pin--active');
+    var activeElement = tokyoPinMap.querySelector('.pin--active');
     if (activeElement) {
       activeElement.classList.remove('pin--active');
     }
@@ -83,6 +84,4 @@
     togglePin: togglePin,
     drawPins: drawPins
   };
-
-
 })();

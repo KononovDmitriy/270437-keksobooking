@@ -8,24 +8,32 @@
 
   var ads = window.data.arrayData();
 
-  window.pin.drawPins(ads, pinClickCollBack, pinKeyDownCallBack);
+  window.card.hideDialog();
+  window.card.addDialogCloseHandler(cardClickCollback, cardKeyDownCollback);
+  window.pin.drawPins(ads, pinClickCollback, pinKeyDownCollback);
 
 
-  function pinKeyDownCallBack(index, element, key) {
+  function pinKeyDownCollback(index, element, key) {
     if (key === keyCode.ENTER) {
       window.card.showDialog(ads, index);
       window.pin.togglePin(element);
     }
   }
 
-  function pinClickCollBack(index, element) {
+  function pinClickCollback(index, element) {
     window.card.showDialog(ads, index);
     window.pin.togglePin(element);
   }
 
+  function cardKeyDownCollback(key) {
+    if (key === keyCode.ESC) {
+      window.card.hideDialog();
+      window.pin.togglePin();
+    }
+  }
 
-  // hideDialog();
-  // addDialogCloseHandler();
-  // var ads = window.data.arrayData();
-  // drawPins(ads);
+  function cardClickCollback() {
+    window.card.hideDialog();
+    window.pin.togglePin();
+  }
 })();
