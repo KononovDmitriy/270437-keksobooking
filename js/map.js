@@ -91,5 +91,4 @@
   function showDialog() {
     offerDialog.classList.remove('hidden');
   }
-
 })();
