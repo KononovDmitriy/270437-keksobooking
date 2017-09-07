@@ -1,10 +1,6 @@
 'use strict';
 
 (function () {
-  var clickCollback;
-  var keydownCollback;
-
-  var html = document.querySelector('html');
   var offerDialog = document.querySelector('#offer-dialog');
   var lodgeTemplate = document.querySelector('#lodge-template');
   var dialogTitleImg = document.querySelector('.dialog__title img');
@@ -68,30 +64,11 @@
     showElement();
   }
 
-
-  function htmlKeydownHandler(evt) {
-    if (!offerDialog.classList.contains('hidden')) {
-      keydownCollback(evt.keyCode);
-    }
-  }
-
-  function addDialogCloseHandler(extClickCollback, extKeydownCollback) {
-    clickCollback = extClickCollback;
-    keydownCollback = extKeydownCollback;
-    dialogClose.addEventListener('click', dialogCloseClickHandler);
-    html.addEventListener('keydown',
-        htmlKeydownHandler);
-  }
-
-  function dialogCloseClickHandler(evt) {
-    evt.preventDefault();
-    clickCollback();
-  }
-
   window.card = {
     showDialog: showDialog,
     hideDialog: hideDialog,
-    addDialogCloseHandler: addDialogCloseHandler
+    dialogCloseEl: dialogClose,
+    offerDialogEl: offerDialog
   };
 })();
 

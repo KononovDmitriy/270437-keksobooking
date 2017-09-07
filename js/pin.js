@@ -2,13 +2,10 @@
 
 (function () {
 
-  var clickCollback;
-  var keydownCollback;
-
   var tokyoPinMap = document.querySelector('.tokyo__pin-map');
 
-  function createDomElements(ads) {
-    var domElementsAttributs = {
+  function createdomElement(pinEl) {
+    var domElementAttributs = {
       DIV_CLASS: 'pin',
       IMG_CLASS: 'rounded',
       IMG_WIDTH: '40',
@@ -19,55 +16,34 @@
       HEIGHT: 75
     };
 
-    var domElements = [];
+    var pinBaloon = document.createElement('div');
+    var userAvatar = document.createElement('img');
 
-    ads.forEach(function (value, index) {
-      var pinBaloon = document.createElement('div');
-      var userAvatar = document.createElement('img');
-      pinBaloon.classList.add(domElementsAttributs.DIV_CLASS);
-      pinBaloon.style.left = (value.location.x - (pin.WIDTH / 2)) + 'px';
-      pinBaloon.style.top = (value.location.y - pin.HEIGHT) + 'px';
-      pinBaloon.setAttribute('tabindex', 0);
-      userAvatar.src = value.author.avatar;
-      userAvatar.className = domElementsAttributs.IMG_CLASS;
-      userAvatar.width = domElementsAttributs.IMG_WIDTH;
-      userAvatar.height = domElementsAttributs.IMG_HEIGHT;
-      pinBaloon.appendChild(userAvatar);
+    pinBaloon.classList.add(domElementAttributs.DIV_CLASS);
+    pinBaloon.style.left = (pinEl.location.x - (pin.WIDTH / 2)) + 'px';
+    pinBaloon.style.top = (pinEl.location.y - pin.HEIGHT) + 'px';
+    pinBaloon.setAttribute('tabindex', 0);
+    userAvatar.src = pinEl.author.avatar;
+    userAvatar.className = domElementAttributs.IMG_CLASS;
+    userAvatar.width = domElementAttributs.IMG_WIDTH;
+    userAvatar.height = domElementAttributs.IMG_HEIGHT;
+    pinBaloon.appendChild(userAvatar);
 
-      domElements[index] = pinBaloon;
-
-      pinAddHandler(pinBaloon, index);
-    });
-
-    return domElements;
+    return pinBaloon;
   }
 
-  function appendDomElements(domElements) {
+  function appenddomElement(domElement) {
     var fragment = document.createDocumentFragment();
-    for (var i = 0; i < domElements.length; i++) {
-      fragment.appendChild(domElements[i]);
-    }
+
+    fragment.appendChild(domElement);
     tokyoPinMap.appendChild(fragment);
   }
 
-  function drawPins(ads, extClickCollback, extKeydownCollback) {
-    clickCollback = extClickCollback;
-    keydownCollback = extKeydownCollback;
-    var domElements = createDomElements(ads);
-    appendDomElements(domElements);
-  }
+  function drawPin(pinEl) {
+    var domElement = createdomElement(pinEl);
+    appenddomElement(domElement);
 
-  function pinAddHandler(pin, index) {
-    pin.addEventListener('click', pinClickHandler.bind(null, index));
-    pin.addEventListener('keydown', pinKeydownHandler.bind(null, index));
-  }
-
-  function pinClickHandler(index, evt) {
-    clickCollback(index, evt.currentTarget);
-  }
-
-  function pinKeydownHandler(index, evt) {
-    keydownCollback(index, evt.currentTarget, evt.keyCode);
+    return domElement;
   }
 
   function togglePin(currentPin) {
@@ -82,6 +58,6 @@
 
   window.pin = {
     togglePin: togglePin,
-    drawPins: drawPins
+    drawPin: drawPin
   };
 })();
