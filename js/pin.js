@@ -2,10 +2,8 @@
 
 (function () {
 
-  var keyCode = {
-    ESC: 27,
-    ENTER: 13
-  };
+  var clickCollback;
+  var keydownCollback;
 
   function createDomElements(ads) {
     var domElementsAttributs = {
@@ -20,6 +18,7 @@
     };
 
     var domElements = [];
+
     ads.forEach(function (value, index) {
       var pinBaloon = document.createElement('div');
       var userAvatar = document.createElement('img');
@@ -50,7 +49,9 @@
     parent.appendChild(fragment);
   }
 
-  function drawPins(ads) {
+  function drawPins(ads, extClickCollback, extKeydownCollback) {
+    clickCollback = extClickCollback;
+    keydownCollback = extKeydownCollback;
     var domElements = createDomElements(ads);
     appendDomElements(domElements);
   }
@@ -61,14 +62,27 @@
   }
 
   function pinClickHandler(index, evt) {
-    showDialog(evt.currentTarget, index);
+    clickCollback(index, evt.currentTarget, evt.keyCode);
   }
 
   function pinKeydownHandler(index, evt) {
-    if (evt.keyCode === keyCode.ENTER) {
-      showDialog(evt.currentTarget, index);
+    keydownCollback(index, evt.currentTarget);
+  }
+
+  function togglePin(currentPin) {
+    var activeElement = document.querySelector('.pin--active');
+    if (activeElement) {
+      activeElement.classList.remove('pin--active');
+    }
+    if (currentPin) {
+      currentPin.classList.add('pin--active');
     }
   }
+
+  window.pin = {
+    togglePin: togglePin,
+    drawPins: drawPins
+  };
 
 
 })();
