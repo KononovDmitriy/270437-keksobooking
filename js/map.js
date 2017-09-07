@@ -15,24 +15,30 @@
 
   function pinKeyDownCollback(index, element, key) {
     if (key === keyCode.ENTER) {
-      window.card.showDialog(ads, index);
-      window.pin.togglePin(element);
+      openCard(index, element);
     }
   }
 
   function pinClickCollback(index, element) {
-    window.card.showDialog(ads, index);
-    window.pin.togglePin(element);
+    openCard(index, element);
   }
 
   function cardKeyDownCollback(key) {
     if (key === keyCode.ESC) {
-      window.card.hideDialog();
-      window.pin.togglePin();
+      closeCard();
     }
   }
 
   function cardClickCollback() {
+    closeCard();
+  }
+
+  function openCard(index, element) {
+    window.card.showDialog(ads, index);
+    window.pin.togglePin(element);
+  }
+
+  function closeCard() {
     window.card.hideDialog();
     window.pin.togglePin();
   }
