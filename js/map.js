@@ -8,23 +8,22 @@
 
   var ads = window.data.arrayData();
   var html = document.querySelector('html');
+  var tokyoPinMap = document.querySelector('.tokyo__pin-map');
+  var offerDialog = document.querySelector('#offer-dialog');
+  var dialogClose = document.querySelector('.dialog__close');
 
-  window.card.hideDialog();
+  hideDialog();
   addDialogCloseHandler();
+  drawPin();
 
-  ads.forEach(function (value, index) {
-    var pinBaloon = window.pin.drawPin(value);
-    pinAddHandler(pinBaloon, index);
-  });
-
-  function openCard(index, element) {
-    window.card.showDialog(ads, index);
-    window.pin.togglePin(element);
-  }
-
-  function closeCard() {
-    window.card.hideDialog();
-    window.pin.togglePin();
+  function drawPin() {
+    var pinBaloonArray = [];
+    ads.forEach(function (value, index) {
+      var pinBaloon = window.pin.createPin(value);
+      pinAddHandler(pinBaloon, index);
+      pinBaloonArray[index] = pinBaloon;
+    });
+    appendDomElement(pinBaloonArray);
   }
 
   function pinAddHandler(pin, index) {
@@ -44,20 +43,53 @@
 
   function htmlKeydownHandler(evt) {
     if (evt.keyCode === keyCode.ESC &&
-        !window.card.offerDialogEl.classList.contains('hidden')) {
+        !offerDialog.classList.contains('hidden')) {
       closeCard();
     }
   }
 
   function addDialogCloseHandler() {
-    window.card.dialogCloseEl.addEventListener('click',
-        dialogCloseClickHandler);
-    html.addEventListener('keydown',
-        htmlKeydownHandler);
+    dialogClose.addEventListener('click', dialogCloseClickHandler);
+    html.addEventListener('keydown', htmlKeydownHandler);
   }
 
   function dialogCloseClickHandler(evt) {
     evt.preventDefault();
     closeCard();
   }
+
+  function appendDomElement(pinBaloonArray) {
+    var fragment = document.createDocumentFragment();
+
+    pinBaloonArray.forEach(function (domElement) {
+      fragment.appendChild(domElement);
+    });
+    tokyoPinMap.appendChild(fragment);
+  }
+
+  function openCard(index, element) {
+    var template = window.card.createDialog(ads[index]);
+    dialogInsertDom(template);
+    showDialog();
+    window.pin.togglePin(element);
+  }
+
+  function closeCard() {
+    hideDialog();
+    window.pin.togglePin();
+  }
+
+  function dialogInsertDom(elementFromTemplate) {
+    var dialogPanel = offerDialog.querySelector('.dialog__panel');
+    dialogPanel.parentNode.replaceChild(elementFromTemplate, dialogPanel);
+  }
+
+  function hideDialog() {
+    offerDialog.classList.add('hidden');
+  }
+
+  function showDialog() {
+    offerDialog.classList.remove('hidden');
+  }
+
 })();

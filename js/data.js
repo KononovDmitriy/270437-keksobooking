@@ -24,6 +24,8 @@
       'conditioner']
   };
 
+  var TYPES = ['flat', 'house', 'bungalo'];
+
   var MAIN_ARRAY_LENGHT = 8;
   var ARRAY_INIT_VALUE = 0;
 
@@ -109,7 +111,6 @@
   }
 
   function getType() {
-    var TYPES = ['flat', 'house', 'bungalo'];
     return TYPES[getRandomNumber(ARRAY_INIT_VALUE, TYPES.length)];
   }
 

@@ -1,21 +1,20 @@
 'use strict';
 
 (function () {
+  var domElementAttributs = {
+    DIV_CLASS: 'pin',
+    IMG_CLASS: 'rounded',
+    IMG_WIDTH: '40',
+    IMG_HEIGHT: '40'
+  };
+  var pin = {
+    WIDTH: 56,
+    HEIGHT: 75
+  };
 
   var tokyoPinMap = document.querySelector('.tokyo__pin-map');
 
-  function createdomElement(pinEl) {
-    var domElementAttributs = {
-      DIV_CLASS: 'pin',
-      IMG_CLASS: 'rounded',
-      IMG_WIDTH: '40',
-      IMG_HEIGHT: '40'
-    };
-    var pin = {
-      WIDTH: 56,
-      HEIGHT: 75
-    };
-
+  function createPin(pinEl) {
     var pinBaloon = document.createElement('div');
     var userAvatar = document.createElement('img');
 
@@ -32,20 +31,6 @@
     return pinBaloon;
   }
 
-  function appenddomElement(domElement) {
-    var fragment = document.createDocumentFragment();
-
-    fragment.appendChild(domElement);
-    tokyoPinMap.appendChild(fragment);
-  }
-
-  function drawPin(pinEl) {
-    var domElement = createdomElement(pinEl);
-    appenddomElement(domElement);
-
-    return domElement;
-  }
-
   function togglePin(currentPin) {
     var activeElement = tokyoPinMap.querySelector('.pin--active');
     if (activeElement) {
@@ -57,7 +42,7 @@
   }
 
   window.pin = {
-    togglePin: togglePin,
-    drawPin: drawPin
+    createPin: createPin,
+    togglePin: togglePin
   };
 })();
