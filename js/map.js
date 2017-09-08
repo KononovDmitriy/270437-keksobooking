@@ -6,7 +6,7 @@
     ENTER: 13
   };
 
-  var ads = window.data.arrayData();
+  var ads = window.data.createArray();
   var html = document.querySelector('html');
   var tokyoPinMap = document.querySelector('.tokyo__pin-map');
   var offerDialog = document.querySelector('#offer-dialog');

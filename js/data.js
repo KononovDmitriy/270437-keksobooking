@@ -115,7 +115,7 @@
   }
 
   window.data = {
-    arrayData: createArray
+    createArray: createArray
   };
 })();
 
