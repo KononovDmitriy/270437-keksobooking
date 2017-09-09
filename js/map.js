@@ -17,14 +17,14 @@
 
   var ads = window.data.createArray();
   var html = document.querySelector('html');
-  var tokyo = html.querySelector('.tokyo');
+  var tokyo = document.querySelector('.tokyo');
   var tokyoPinMap = tokyo.querySelector('.tokyo__pin-map');
   var offerDialog = tokyo.querySelector('#offer-dialog');
-  var dialogClose = offerDialog.querySelector('.dialog__close');
+  var dialogClose = html.querySelector('.dialog__close');
   var pinMain = tokyoPinMap.querySelector('.pin__main');
   var city = tokyo.querySelector('.tokyo img');
   var filterContainer = tokyo.querySelector('.tokyo__filters-container');
-  var address = html.querySelector('#address');
+  var address = document.querySelector('#address');
 
   hideDialog();
   addDialogCloseHandler();
@@ -49,13 +49,20 @@
   }
 
   function pinClickHandler(index, evt) {
-    openCard(index, evt.currentTarget);
+    window.showCard(evt.currentTarget, ads[index]);
+    window.pin.togglePin(evt.currentTarget);
   }
 
   function pinKeydownHandler(index, evt) {
     if (evt.keyCode === keyCode.ENTER) {
-      openCard(index, evt.currentTarget);
+      window.showCard(evt.currentTarget, ads[index]);
+      window.pin.togglePin(evt.currentTarget);
     }
+  }
+
+  function dialogCloseClickHandler(evt) {
+    evt.preventDefault();
+    closeCard();
   }
 
   function htmlKeydownHandler(evt) {
@@ -63,16 +70,6 @@
         !offerDialog.classList.contains('hidden')) {
       closeCard();
     }
-  }
-
-  function addDialogCloseHandler() {
-    dialogClose.addEventListener('click', dialogCloseClickHandler);
-    html.addEventListener('keydown', htmlKeydownHandler);
-  }
-
-  function dialogCloseClickHandler(evt) {
-    evt.preventDefault();
-    closeCard();
   }
 
   function appendDomElement(pinBaloonArray) {
@@ -84,29 +81,18 @@
     tokyoPinMap.appendChild(fragment);
   }
 
-  function openCard(index, element) {
-    var template = window.card.createDialog(ads[index]);
-    dialogInsertDom(template);
-    showDialog();
-    window.pin.togglePin(element);
-  }
-
   function closeCard() {
     hideDialog();
     window.pin.togglePin();
-  }
-
-  function dialogInsertDom(elementFromTemplate) {
-    var dialogPanel = offerDialog.querySelector('.dialog__panel');
-    dialogPanel.parentNode.replaceChild(elementFromTemplate, dialogPanel);
   }
 
   function hideDialog() {
     offerDialog.classList.add('hidden');
   }
 
-  function showDialog() {
-    offerDialog.classList.remove('hidden');
+  function addDialogCloseHandler() {
+    dialogClose.addEventListener('click', dialogCloseClickHandler);
+    html.addEventListener('keydown', htmlKeydownHandler);
   }
 
   function dragPin() {
