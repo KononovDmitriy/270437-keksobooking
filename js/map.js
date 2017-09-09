@@ -1,10 +1,7 @@
 'use strict';
 
 (function () {
-  var keyCode = {
-    ESC: 27,
-    ENTER: 13
-  };
+  var ENTER = 13;
 
   var pinСoordinates = {
     startX: 0,
@@ -16,18 +13,16 @@
   };
 
   var ads = window.data.createArray();
-  var html = document.querySelector('html');
+
   var tokyo = document.querySelector('.tokyo');
   var tokyoPinMap = tokyo.querySelector('.tokyo__pin-map');
-  var offerDialog = tokyo.querySelector('#offer-dialog');
-  var dialogClose = html.querySelector('.dialog__close');
+  // var offerDialog = document.querySelector('#offer-dialog');
   var pinMain = tokyoPinMap.querySelector('.pin__main');
   var city = tokyo.querySelector('.tokyo img');
   var filterContainer = tokyo.querySelector('.tokyo__filters-container');
   var address = document.querySelector('#address');
 
-  hideDialog();
-  addDialogCloseHandler();
+  window.showCard(false);
   drawPin();
   getLocationLimits();
   outputAddress();
@@ -49,26 +44,12 @@
   }
 
   function pinClickHandler(index, evt) {
-    window.showCard(evt.currentTarget, ads[index]);
-    window.pin.togglePin(evt.currentTarget);
+    window.showCard(true, evt.currentTarget, ads[index]);
   }
 
   function pinKeydownHandler(index, evt) {
-    if (evt.keyCode === keyCode.ENTER) {
-      window.showCard(evt.currentTarget, ads[index]);
-      window.pin.togglePin(evt.currentTarget);
-    }
-  }
-
-  function dialogCloseClickHandler(evt) {
-    evt.preventDefault();
-    closeCard();
-  }
-
-  function htmlKeydownHandler(evt) {
-    if (evt.keyCode === keyCode.ESC &&
-        !offerDialog.classList.contains('hidden')) {
-      closeCard();
+    if (evt.keyCode === ENTER) {
+      window.showCard(true, evt.currentTarget, ads[index]);
     }
   }
 
@@ -79,20 +60,6 @@
       fragment.appendChild(domElement);
     });
     tokyoPinMap.appendChild(fragment);
-  }
-
-  function closeCard() {
-    hideDialog();
-    window.pin.togglePin();
-  }
-
-  function hideDialog() {
-    offerDialog.classList.add('hidden');
-  }
-
-  function addDialogCloseHandler() {
-    dialogClose.addEventListener('click', dialogCloseClickHandler);
-    html.addEventListener('keydown', htmlKeydownHandler);
   }
 
   function dragPin() {
