@@ -10,13 +10,6 @@
   addDialogCloseHandler();
   closeCard();
 
-  function openCard(element, data) {
-    var template = window.card.createDialog(data);
-    dialogInsertDom(template);
-    offerDialog.classList.remove('hidden');
-    window.pin.togglePin(element);
-  }
-
   function dialogInsertDom(elementFromTemplate) {
     var dialogPanel = offerDialog.querySelector('.dialog__panel');
     dialogPanel.parentNode.replaceChild(elementFromTemplate, dialogPanel);
@@ -44,8 +37,10 @@
   }
 
   function showCard(element, data) {
-    openCard(element, data);
-    closeCard();
+    var template = window.card.createDialog(data);
+    dialogInsertDom(template);
+    offerDialog.classList.remove('hidden');
+    window.pin.togglePin(element);
   }
 
   window.showCard = showCard;
