@@ -15,79 +15,85 @@
     'palace': 10000
   };
 
+  var TIME = {
+    '12:00': '12:00',
+    '13:00': '13:00',
+    '14:00': '14:00'
+  };
+
   var noticeForm = document.querySelector('.notice__form');
   var buildingType = noticeForm.querySelector('#type');
   var timeIn = noticeForm.querySelector('#timein');
   var timeOut = noticeForm.querySelector('#timeout');
   var roomNumber = noticeForm.querySelector('#room_number');
-  var title = noticeForm.querySelector('#title');
-  var address = noticeForm.querySelector('#address');
   var price = noticeForm.querySelector('#price');
   var guests = noticeForm.querySelectorAll('#capacity option');
+  var formSubmitButton = noticeForm.querySelector('.form__submit');
   var capacityField = document.querySelector('#capacity');
 
-  function timeChangeHandler(evt) {
-    var elementId = (evt.currentTarget.id === 'timein') ? '#timeout' : '#timein';
-    noticeForm.querySelector(elementId).value = evt.currentTarget.value;
+  initializeForm();
+  addFormHandlers();
+
+  function timeInHandler() {
+    window.synchronizeFields(timeIn, timeOut, TIME, timeChangeCallBack);
+  }
+
+  function timeOutHandler() {
+    window.synchronizeFields(timeOut, timeIn, TIME, timeChangeCallBack);
+  }
+
+  function timeChangeCallBack(element, value) {
+    element.value = value;
   }
 
   function typeChangeHandler() {
-    typeSetMinValue();
+    window.synchronizeFields(buildingType, price, PRICE, typeChangeCallBack);
+  }
+
+  function typeChangeCallBack(element, value) {
+    element.setAttribute('min', value);
   }
 
   function roomNumberChangeHandler() {
-    choiceNumberGuests();
+    window.synchronizeFields(roomNumber, guests, CAPACITY_NUMBERS,
+        roomNumberChangeCallBack);
   }
 
-  function noticeFormSubmitHandler(evt) {
-    evt.preventDefault();
+  function roomNumberChangeCallBack(elements, value) {
+    elements.forEach(function (elementent) {
+      elementent.disabled = !value.includes(elementent.value);
 
-    if (validateForm()) {
-      noticeForm.submit();
-      noticeForm.reset();
-    }
-  }
-
-  function noticeFormInvalidHandler() {
-    var elements = noticeForm.querySelectorAll('input:not([type="checkbox"])');
-
-    elements.forEach(function (element) {
-      element.classList.toggle('invalid', !element.validity.valid);
-    });
-  }
-
-  function typeSetMinValue() {
-    price.setAttribute('min', PRICE[buildingType.value]);
-  }
-
-  function choiceNumberGuests() {
-    var values = CAPACITY_NUMBERS[roomNumber.value];
-
-    guests.forEach(function (element) {
-      element.disabled = !values.includes(element.value);
-
-      if (!element.disabled) {
-        capacityField.value = element.value;
+      if (!elementent.disabled) {
+        capacityField.value = elementent.value;
       }
     });
   }
 
-  function validateForm() {
-    return title.validity.valid && address.validity.valid && price.validity.valid;
+  function noticeFormSubmitHandler() {
+    noticeForm.reset();
   }
 
-  (function initializeForm() {
-    typeSetMinValue();
-    choiceNumberGuests();
-  })();
+  function formSubmitButtonClickHandler() {
+    var elementents = noticeForm.querySelectorAll('input:not([type="checkbox"])');
 
-  (function addFormHandlers() {
+    elementents.forEach(function (elementent) {
+      elementent.classList.toggle('invalid', !elementent.validity.valid);
+    });
+  }
+
+  function initializeForm() {
+    window.synchronizeFields(buildingType, price, PRICE, typeChangeCallBack);
+    window.synchronizeFields(roomNumber, guests, CAPACITY_NUMBERS,
+        roomNumberChangeCallBack);
+  }
+
+  function addFormHandlers() {
     noticeForm.addEventListener('submit', noticeFormSubmitHandler);
-    noticeForm.addEventListener('invalid', noticeFormInvalidHandler, true);
+    formSubmitButton.addEventListener('click', formSubmitButtonClickHandler);
     buildingType.addEventListener('change', typeChangeHandler);
-    timeIn.addEventListener('change', timeChangeHandler);
-    timeOut.addEventListener('change', timeChangeHandler);
+    timeIn.addEventListener('change', timeInHandler);
+    timeOut.addEventListener('change', timeOutHandler);
     roomNumber.addEventListener('change', roomNumberChangeHandler);
-  })();
+  }
 
 })();
