@@ -69,8 +69,18 @@
     });
   }
 
-  function noticeFormSubmitHandler() {
+  function noticeFormSubmitHandler(evt) {
+    evt.preventDefault();
+    window.backend.save(new FormData(noticeForm), saveOnLoadHandler,
+        saveErrorHandler);
+  }
+
+  function saveOnLoadHandler() {
     noticeForm.reset();
+  }
+
+  function saveErrorHandler(errorMessage) {
+    alert(errorMessage);
   }
 
   function formSubmitButtonClickHandler() {

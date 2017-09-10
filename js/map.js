@@ -12,7 +12,7 @@
     locationMaxY: 0,
   };
 
-  var ads = window.data.createArray();
+  var ads;
   var tokyo = document.querySelector('.tokyo');
   var tokyoPinMap = tokyo.querySelector('.tokyo__pin-map');
   var pinMain = tokyoPinMap.querySelector('.pin__main');
@@ -20,10 +20,19 @@
   var filterContainer = tokyo.querySelector('.tokyo__filters-container');
   var address = document.querySelector('#address');
 
-  drawPin();
+  window.backend.load(loadSuccessHandler, loadErrorHandler);
   getLocationLimits();
   outputAddress();
   dragPin();
+
+  function loadSuccessHandler(response) {
+    ads = response;
+    drawPin();
+  }
+
+  function loadErrorHandler(errorMessage) {
+    alert(errorMessage);
+  }
 
   function drawPin() {
     var pinBaloonArray = [];
