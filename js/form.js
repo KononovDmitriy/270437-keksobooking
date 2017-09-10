@@ -26,12 +26,13 @@
   var timeIn = noticeForm.querySelector('#timein');
   var timeOut = noticeForm.querySelector('#timeout');
   var roomNumber = noticeForm.querySelector('#room_number');
-  // var title = noticeForm.querySelector('#title');
-  // var address = noticeForm.querySelector('#address');
   var price = noticeForm.querySelector('#price');
   var guests = noticeForm.querySelectorAll('#capacity option');
   var formSubmitButton = noticeForm.querySelector('.form__submit');
   var capacityField = document.querySelector('#capacity');
+
+  initializeForm();
+  addFormHandlers();
 
   function timeInHandler() {
     window.synchronizeFields(timeIn, timeOut, TIME, timeChangeCallBack);
@@ -41,16 +42,16 @@
     window.synchronizeFields(timeOut, timeIn, TIME, timeChangeCallBack);
   }
 
-  function timeChangeCallBack(elem, value) {
-    elem.value = value;
+  function timeChangeCallBack(element, value) {
+    element.value = value;
   }
 
   function typeChangeHandler() {
     window.synchronizeFields(buildingType, price, PRICE, typeChangeCallBack);
   }
 
-  function typeChangeCallBack(elem, value) {
-    elem.setAttribute('min', value);
+  function typeChangeCallBack(element, value) {
+    element.setAttribute('min', value);
   }
 
   function roomNumberChangeHandler() {
@@ -58,44 +59,41 @@
         roomNumberChangeCallBack);
   }
 
-  function roomNumberChangeCallBack(elem, value) {
-    elem.forEach(function (element) {
-      element.disabled = !value.includes(element.value);
+  function roomNumberChangeCallBack(elements, value) {
+    elements.forEach(function (elementent) {
+      elementent.disabled = !value.includes(elementent.value);
 
-      if (!element.disabled) {
-        capacityField.value = element.value;
+      if (!elementent.disabled) {
+        capacityField.value = elementent.value;
       }
     });
   }
 
-  function noticeFormSubmitHandler(evt) {
-    evt.preventDefault();
-
-    noticeForm.submit();
+  function noticeFormSubmitHandler() {
     noticeForm.reset();
   }
 
   function formSubmitButtonClickHandler() {
-    var elements = noticeForm.querySelectorAll('input:not([type="checkbox"])');
+    var elementents = noticeForm.querySelectorAll('input:not([type="checkbox"])');
 
-    elements.forEach(function (element) {
-      element.classList.toggle('invalid', !element.validity.valid);
+    elementents.forEach(function (elementent) {
+      elementent.classList.toggle('invalid', !elementent.validity.valid);
     });
   }
 
-  (function initializeForm() {
+  function initializeForm() {
     window.synchronizeFields(buildingType, price, PRICE, typeChangeCallBack);
     window.synchronizeFields(roomNumber, guests, CAPACITY_NUMBERS,
         roomNumberChangeCallBack);
-  })();
+  }
 
-  (function addFormHandlers() {
+  function addFormHandlers() {
     noticeForm.addEventListener('submit', noticeFormSubmitHandler);
     formSubmitButton.addEventListener('click', formSubmitButtonClickHandler);
     buildingType.addEventListener('change', typeChangeHandler);
     timeIn.addEventListener('change', timeInHandler);
     timeOut.addEventListener('change', timeOutHandler);
     roomNumber.addEventListener('change', roomNumberChangeHandler);
-  })();
+  }
 
 })();

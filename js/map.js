@@ -13,16 +13,13 @@
   };
 
   var ads = window.data.createArray();
-
   var tokyo = document.querySelector('.tokyo');
   var tokyoPinMap = tokyo.querySelector('.tokyo__pin-map');
-  // var offerDialog = document.querySelector('#offer-dialog');
   var pinMain = tokyoPinMap.querySelector('.pin__main');
   var city = tokyo.querySelector('.tokyo img');
   var filterContainer = tokyo.querySelector('.tokyo__filters-container');
   var address = document.querySelector('#address');
 
-  window.showCard(false);
   drawPin();
   getLocationLimits();
   outputAddress();
@@ -44,12 +41,12 @@
   }
 
   function pinClickHandler(index, evt) {
-    window.showCard(true, evt.currentTarget, ads[index]);
+    window.showCard(evt.currentTarget, ads[index]);
   }
 
   function pinKeydownHandler(index, evt) {
     if (evt.keyCode === ENTER) {
-      window.showCard(true, evt.currentTarget, ads[index]);
+      window.showCard(evt.currentTarget, ads[index]);
     }
   }
 

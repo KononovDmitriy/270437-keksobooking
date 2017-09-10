@@ -8,6 +8,7 @@
   var dialogClose = offerDialog.querySelector('.dialog__close');
 
   addDialogCloseHandler();
+  closeCard();
 
   function openCard(element, data) {
     var template = window.card.createDialog(data);
@@ -42,12 +43,9 @@
     }
   }
 
-  function showCard(act, element, data) {
-    if (act) {
-      openCard(element, data);
-    } else {
-      closeCard();
-    }
+  function showCard(element, data) {
+    openCard(element, data);
+    closeCard();
   }
 
   window.showCard = showCard;
