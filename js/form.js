@@ -77,16 +77,11 @@
 
   function saveOnLoadHandler() {
     noticeForm.reset();
-    window.map.outputAddress();
+    window.map.displayAddress();
   }
 
   function saveErrorHandler(errorMessage) {
-    var node = document.createElement('div');
-    node.setAttribute('style', 'margin: 0 auto; text-align: center;' +
-      'background-color: red; z-index: 100; position: absolute; left: 0;' +
-      'right: 0; font-size: 30px');
-    node.textContent = errorMessage;
-    document.body.insertAdjacentElement('afterbegin', node);
+    window.map.displayError(errorMessage);
   }
 
   function formSubmitButtonClickHandler() {

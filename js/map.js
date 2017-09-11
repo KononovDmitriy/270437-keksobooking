@@ -22,7 +22,7 @@
 
   window.backend.load(loadSuccessHandler, loadErrorHandler);
   getLocationLimits();
-  outputAddress();
+  displayAddress();
   dragPin();
 
   function loadSuccessHandler(response) {
@@ -31,6 +31,10 @@
   }
 
   function loadErrorHandler(errorMessage) {
+    displayError(errorMessage);
+  }
+
+  function displayError(errorMessage) {
     var node = document.createElement('div');
     node.setAttribute('style', 'margin: 0 auto; text-align: center;' +
       'background-color: red; z-index: 100; position: absolute; left: 0;' +
@@ -105,7 +109,7 @@
     pinСoordinates.startX = evt.clientX;
     pinСoordinates.startY = evt.clientY;
 
-    outputAddress();
+    displayAddress();
   }
 
   function cityMainMouseUpHandler(evt) {
@@ -150,13 +154,14 @@
     }
   }
 
-  function outputAddress() {
+  function displayAddress() {
     address.value = 'x:' + (pinMain.offsetLeft + pinMain.offsetWidth / 2)
       + ', y:' + (pinMain.offsetTop + pinMain.offsetHeight);
   }
 
   window.map = {
-    outputAddress: outputAddress
+    displayAddress: displayAddress,
+    displayError: displayError
   };
 
 })();
