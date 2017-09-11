@@ -12,7 +12,7 @@
     locationMaxY: 0,
   };
 
-  var ads = window.data.createArray();
+  var ads;
   var tokyo = document.querySelector('.tokyo');
   var tokyoPinMap = tokyo.querySelector('.tokyo__pin-map');
   var pinMain = tokyoPinMap.querySelector('.pin__main');
@@ -20,10 +20,24 @@
   var filterContainer = tokyo.querySelector('.tokyo__filters-container');
   var address = document.querySelector('#address');
 
-  drawPin();
+  window.backend.load(loadSuccessHandler, loadErrorHandler);
   getLocationLimits();
   outputAddress();
   dragPin();
+
+  function loadSuccessHandler(response) {
+    ads = response;
+    drawPin();
+  }
+
+  function loadErrorHandler(errorMessage) {
+    var node = document.createElement('div');
+    node.setAttribute('style', 'margin: 0 auto; text-align: center;' +
+      'background-color: red; z-index: 100; position: absolute; left: 0;' +
+      'right: 0; font-size: 30px');
+    node.textContent = errorMessage;
+    document.body.insertAdjacentElement('afterbegin', node);
+  }
 
   function drawPin() {
     var pinBaloonArray = [];
@@ -137,7 +151,12 @@
   }
 
   function outputAddress() {
-    address.value = 'x: ' + (pinMain.offsetLeft + pinMain.offsetWidth / 2)
-      + ', y: ' + (pinMain.offsetTop + pinMain.offsetHeight);
+    address.value = 'x:' + (pinMain.offsetLeft + pinMain.offsetWidth / 2)
+      + ', y:' + (pinMain.offsetTop + pinMain.offsetHeight);
   }
+
+  window.map = {
+    outputAddress: outputAddress
+  };
+
 })();
