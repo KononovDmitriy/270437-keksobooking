@@ -19,6 +19,15 @@
   var city = tokyo.querySelector('.tokyo img');
   var filterContainer = tokyo.querySelector('.tokyo__filters-container');
   var address = document.querySelector('#address');
+  var filtersContainer = tokyo.querySelector('.tokyo__filters-container');
+  // var filterType = filtersContainer.querySelector('#housing_type');
+  // var filterPrice = filtersContainer.querySelector('#housing_price');
+  // var filterRooms = filtersContainer.querySelector('#housing_room-number');
+  // var filterGuests = filtersContainer.querySelector('#housing_guests-number');
+  // var filterFeatures = filtersContainer.querySelectorAll('#housing_features [name = \'feature\']');
+  var selectFilters = filtersContainer.querySelectorAll('select');
+  var checkboxFilters = filtersContainer.querySelectorAll('input [name = \'feature\']');
+
 
   window.backend.load(loadSuccessHandler, loadErrorHandler);
   getLocationLimits();
@@ -157,6 +166,13 @@
   function displayAddress() {
     address.value = 'x:' + (pinMain.offsetLeft + pinMain.offsetWidth / 2)
       + ', y:' + (pinMain.offsetTop + pinMain.offsetHeight);
+  }
+
+  function addFiltersHadlers() {
+    filterType.addEventListener('change', filterTypeChangeHandler);
+    filterPrice.addEventListener('change', filterPriceChangeHandler);
+    filterRooms.addEventListener('change', filterRoomsChangeHandler);
+    filterGuests.addEventListener('change', filterGuestsChangeHandler);
   }
 
   window.map = {
