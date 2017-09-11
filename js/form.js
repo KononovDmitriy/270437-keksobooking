@@ -77,6 +77,7 @@
 
   function saveOnLoadHandler() {
     noticeForm.reset();
+    window.map.outputAddress();
   }
 
   function saveErrorHandler(errorMessage) {

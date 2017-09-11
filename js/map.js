@@ -23,10 +23,7 @@
   window.backend.load(loadSuccessHandler, loadErrorHandler);
   getLocationLimits();
   outputAddress();
-  addAddressHanler()
   dragPin();
-
-  getPinMainCoordinates();
 
   function loadSuccessHandler(response) {
     ads = response;
@@ -40,21 +37,6 @@
       'right: 0; font-size: 30px');
     node.textContent = errorMessage;
     document.body.insertAdjacentElement('afterbegin', node);
-  }
-
-  function addAddressHanler() {
-    address.addEventListener('input', addressInputHandler);
-  }
-
-  function addressInputHandler() {
-    if (address.validity.valid) {
-      movePinMain();
-      console.log("ок");
-    }
-    else {
-      // address.setCustomValidity('ошибка!!!');
-      console.log("!!!!");
-    }
   }
 
   function drawPin() {
@@ -173,18 +155,8 @@
       + ', y:' + (pinMain.offsetTop + pinMain.offsetHeight);
   }
 
-  function movePinMain() {
-    var pinMainCoordinates = getPinMainCoordinates();
-    pinMain.setAttribute('style', 'Left:' + pinMainCoordinates[0] +
-        'px; Top:' + pinMainCoordinates[1] + 'px');
-  }
+  window.map = {
+    outputAddress: outputAddress
+  };
 
-  function getPinMainCoordinates() {
-    var dataString = address.value;
-    var dataArray = dataString.split(', ');
-    dataArray.forEach(function (value, index) {
-      dataArray[index] = value.slice(2, value.length);
-    });
-    return dataArray;
-  }
 })();
