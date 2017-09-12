@@ -187,7 +187,7 @@
     var adsFiteredTypes = applyFilters(ads, filterType.value, 'type', false);
     var adsFiteredPrice = applyFiltersPrice(adsFiteredTypes);
     var adsFiteredRooms = applyFilters(adsFiteredPrice, filterRooms.value, 'rooms', true);
-    var adsFiteredGuests = applyFilters(adsFiteredRooms, filterGuests.value, 'guests', false);
+    var adsFiteredGuests = applyFilters(adsFiteredRooms, filterGuests.value, 'guests', true);
     var adsFilteredFeatures = applyFiltersFeatures(adsFiteredGuests);
 
     return adsFilteredFeatures;
