@@ -16,7 +16,7 @@
   };
 
   var ads;
-  var adsFitered;
+  var adsFiltered;
 
   var tokyo = document.querySelector('.tokyo');
   var tokyoPinMap = tokyo.querySelector('.tokyo__pin-map');
@@ -24,14 +24,20 @@
   var city = tokyo.querySelector('.tokyo img');
   var filterContainer = tokyo.querySelector('.tokyo__filters-container');
   var address = document.querySelector('#address');
-  var filtersContainer = tokyo.querySelector('.tokyo__filters-container');
-  var filterType = filtersContainer.querySelector('#housing_type');
-  var filterPrice = filtersContainer.querySelector('#housing_price');
-  var filterRooms = filtersContainer.querySelector('#housing_room-number');
-  var filterGuests = filtersContainer.querySelector('#housing_guests-number');
-  var filterFeatures = filtersContainer.querySelectorAll('#housing_features [name = \'feature\']');
+  var tokyoFilters = tokyo.querySelector('.tokyo__filters');
+  var filterType = tokyoFilters.querySelector('#housing_type');
+  var filterPrice = tokyoFilters.querySelector('#housing_price');
+  var filterRooms = tokyoFilters.querySelector('#housing_room-number');
+  var filterGuests = tokyoFilters.querySelector('#housing_guests-number');
+  var filterFeatures = tokyoFilters.querySelectorAll('#housing_features [name = \'feature\']');
 
-  addFiltersHadlers();
+  var functionsFilters = [applyFilters, applyFiltersPrice, applyFiltersFeatures];
+
+  tokyoFilters.addEventListener('change', function () {
+    adsFiltered = filterAds();
+    window.pin.hidePins();
+    window.utils.debounce(drawPin);
+  });
 
   window.backend.load(loadSuccessHandler, loadErrorHandler);
   getLocationLimits();
@@ -40,7 +46,7 @@
 
   function loadSuccessHandler(response) {
     ads = response;
-    adsFitered = filterAds();
+    adsFiltered = filterAds();
     drawPin();
   }
 
@@ -50,7 +56,7 @@
 
   function drawPin() {
     var pinBaloonArray = [];
-    adsFitered.forEach(function (value, index) {
+    adsFiltered.forEach(function (value, index) {
       var pinBaloon = window.pin.createPin(value);
       pinAddHandler(pinBaloon, index);
       pinBaloonArray[index] = pinBaloon;
@@ -64,7 +70,7 @@
   }
 
   function pinClickHandler(index, evt) {
-    window.showCard(evt.currentTarget, adsFitered[index]);
+    window.showCard(evt.currentTarget, adsFiltered[index]);
   }
 
   function pinKeydownHandler(index, evt) {
@@ -166,69 +172,56 @@
       + ', y:' + (pinMain.offsetTop + pinMain.offsetHeight);
   }
 
-  function addFiltersHadlers() {
-    filterType.addEventListener('change', filterChangeHandler);
-    filterPrice.addEventListener('change', filterChangeHandler);
-    filterRooms.addEventListener('change', filterChangeHandler);
-    filterGuests.addEventListener('change', filterChangeHandler);
-
-    filterFeatures.forEach(function (value) {
-      value.addEventListener('change', filterChangeHandler);
-    });
-  }
-
-  function filterChangeHandler() {
-    adsFitered = filterAds();
-    window.pin.hidePins();
-    window.utils.debounce(drawPin);
-  }
-
   function filterAds() {
-    var adsFiteredTypes = applyFilters(ads, filterType.value, 'type', false);
-    var adsFiteredPrice = applyFiltersPrice(adsFiteredTypes);
-    var adsFiteredRooms = applyFilters(adsFiteredPrice, filterRooms.value, 'rooms', true);
-    var adsFiteredGuests = applyFilters(adsFiteredRooms, filterGuests.value, 'guests', true);
-    var adsFilteredFeatures = applyFiltersFeatures(adsFiteredGuests);
-
-    return adsFilteredFeatures;
+    var adsArray = ads.filter(function (ad) {
+      return functionsFilters.every(function (func) {
+        return func(ad);
+      });
+    });
+    return adsArray;
   }
 
-  function applyFilters(elementsArray, elementValue, key, isNumber) {
-    return elementsArray.filter(function (element) {
-      if (elementValue !== 'any') {
-        elementValue = isNumber ? Number(elementValue) : elementValue;
-        return element.offer[key] === elementValue;
+  function applyFilters(elementsArray) {
+    var par = [
+      {elementValue: filterType.value, key: 'type', isNumber: false},
+      {elementValue: filterRooms.value, key: 'rooms', isNumber: true},
+      {elementValue: filterGuests.value, key: 'guests', isNumber: true}
+    ];
+
+    var features = true;
+
+    par.forEach(function (value) {
+      if (value.elementValue !== 'any') {
+        value.elementValue = value.isNumber ? Number(value.elementValue) : value.elementValue;
+
+        features = features && (elementsArray.offer[value.key] === value.elementValue);
       }
-      return true;
     });
+    return features;
   }
 
   function applyFiltersPrice(elementsArray) {
-    return elementsArray.filter(function (element) {
-      switch (filterPrice.value) {
-        case 'low':
-          return element.offer.price <= filterPrices.LOW;
-        case 'high':
-          return element.offer.price >= filterPrices.HIGHT;
-        case 'middle':
-          return element.offer.price >= filterPrices.LOW &&
-            element.offer.price <= filterPrices.HIGHT;
-      }
-      return true;
-    });
+    switch (filterPrice.value) {
+      case 'low':
+        return elementsArray.offer.price <= filterPrices.LOW;
+      case 'high':
+        return elementsArray.offer.price >= filterPrices.HIGHT;
+      case 'middle':
+        return elementsArray.offer.price >= filterPrices.LOW &&
+          elementsArray.offer.price <= filterPrices.HIGHT;
+    }
+    return true;
   }
 
   function applyFiltersFeatures(elementsArray) {
-    return elementsArray.filter(function (element) {
-      var features = true;
+    var features = true;
 
-      filterFeatures.forEach(function (featureElement) {
-        if (featureElement.checked) {
-          features = features && element.offer.features.includes(featureElement.value);
-        }
-      });
-      return features;
+    filterFeatures.forEach(function (featureElement) {
+      if (featureElement.checked) {
+        features = features && elementsArray.offer.features.includes(featureElement.value);
+      }
     });
+    return features;
   }
 
   window.map = {
