@@ -6,6 +6,9 @@
     ENTER_KEYCODE: 13
   };
 
+  var DEBOUNCE_INTERVAL = 500;
+  var lastTimeout;
+
   function displayError(errorMessage) {
     var node = document.createElement('div');
     node.setAttribute('style', 'margin: 0 auto; text-align: center;' +
@@ -25,6 +28,12 @@
       if (evt.keyCode === keyCode.ESC_KEYCODE) {
         action();
       }
+    },
+    debounce: function (fun) {
+      if (lastTimeout) {
+        window.clearTimeout(lastTimeout);
+      }
+      lastTimeout = window.setTimeout(fun, DEBOUNCE_INTERVAL);
     },
     displayError: displayError
   };

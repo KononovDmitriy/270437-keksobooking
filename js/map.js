@@ -40,6 +40,7 @@
 
   function loadSuccessHandler(response) {
     ads = response;
+    adsFitered = filterAds();
     drawPin();
   }
 
@@ -49,7 +50,7 @@
 
   function drawPin() {
     var pinBaloonArray = [];
-    ads.forEach(function (value, index) {
+    adsFitered.forEach(function (value, index) {
       var pinBaloon = window.pin.createPin(value);
       pinAddHandler(pinBaloon, index);
       pinBaloonArray[index] = pinBaloon;
@@ -63,7 +64,7 @@
   }
 
   function pinClickHandler(index, evt) {
-    window.showCard(evt.currentTarget, ads[index]);
+    window.showCard(evt.currentTarget, adsFitered[index]);
   }
 
   function pinKeydownHandler(index, evt) {
@@ -170,33 +171,64 @@
     filterPrice.addEventListener('change', filterChangeHandler);
     filterRooms.addEventListener('change', filterChangeHandler);
     filterGuests.addEventListener('change', filterChangeHandler);
+
     filterFeatures.forEach(function (value) {
       value.addEventListener('change', filterChangeHandler);
     });
   }
 
   function filterChangeHandler() {
-    adsFitered = ads.filter(function (element) {
-      if (filterType.value !== 'any') {
-        return element.offer.type === filterType.value;
+    adsFitered = filterAds();
+    window.pin.hidePins();
+    window.utils.debounce(drawPin);
+  }
+
+  function filterAds() {
+    var adsFiteredTypes = applyFilters(ads, filterType.value, 'type', false);
+    var adsFiteredPrice = applyFiltersPrice(adsFiteredTypes);
+    var adsFiteredRooms = applyFilters(adsFiteredPrice, filterRooms.value, 'rooms', true);
+    var adsFiteredGuests = applyFilters(adsFiteredRooms, filterGuests.value, 'guests', false);
+    var adsFilteredFeatures = applyFiltersFeatures(adsFiteredGuests);
+
+    return adsFilteredFeatures;
+  }
+
+  function applyFilters(elementsArray, elementValue, key, isNumber) {
+    return elementsArray.filter(function (element) {
+      if (elementValue !== 'any') {
+        elementValue = isNumber ? Number(elementValue) : elementValue;
+        return element.offer[key] === elementValue;
       }
       return true;
     });
+  }
 
-    console.dir(adsFitered);
-
-    adsFitered = adsFitered.filter(function (element) {
+  function applyFiltersPrice(elementsArray) {
+    return elementsArray.filter(function (element) {
       switch (filterPrice.value) {
         case 'low':
           return element.offer.price <= filterPrices.LOW;
-        case 'hight':
+        case 'high':
           return element.offer.price >= filterPrices.HIGHT;
         case 'middle':
           return element.offer.price >= filterPrices.LOW &&
             element.offer.price <= filterPrices.HIGHT;
       }
+      return true;
     });
-    console.dir(adsFitered);
+  }
+
+  function applyFiltersFeatures(elementsArray) {
+    return elementsArray.filter(function (element) {
+      var features = true;
+
+      filterFeatures.forEach(function (featureElement) {
+        if (featureElement.checked) {
+          features = features && element.offer.features.includes(featureElement.value);
+        }
+      });
+      return features;
+    });
   }
 
   window.map = {
