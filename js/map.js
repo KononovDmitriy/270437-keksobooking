@@ -1,8 +1,6 @@
 'use strict';
 
 (function () {
-  var ENTER = 13;
-
   var pinСoordinates = {
     startX: 0,
     startY: 0,
@@ -19,15 +17,6 @@
   var city = tokyo.querySelector('.tokyo img');
   var filterContainer = tokyo.querySelector('.tokyo__filters-container');
   var address = document.querySelector('#address');
-  var filtersContainer = tokyo.querySelector('.tokyo__filters-container');
-  // var filterType = filtersContainer.querySelector('#housing_type');
-  // var filterPrice = filtersContainer.querySelector('#housing_price');
-  // var filterRooms = filtersContainer.querySelector('#housing_room-number');
-  // var filterGuests = filtersContainer.querySelector('#housing_guests-number');
-  // var filterFeatures = filtersContainer.querySelectorAll('#housing_features [name = \'feature\']');
-  var selectFilters = filtersContainer.querySelectorAll('select');
-  var checkboxFilters = filtersContainer.querySelectorAll('input [name = \'feature\']');
-
 
   window.backend.load(loadSuccessHandler, loadErrorHandler);
   getLocationLimits();
@@ -40,16 +29,7 @@
   }
 
   function loadErrorHandler(errorMessage) {
-    displayError(errorMessage);
-  }
-
-  function displayError(errorMessage) {
-    var node = document.createElement('div');
-    node.setAttribute('style', 'margin: 0 auto; text-align: center;' +
-      'background-color: red; z-index: 100; position: absolute; left: 0;' +
-      'right: 0; font-size: 30px');
-    node.textContent = errorMessage;
-    document.body.insertAdjacentElement('afterbegin', node);
+    window.utils.displayError(errorMessage);
   }
 
   function drawPin() {
@@ -72,9 +52,11 @@
   }
 
   function pinKeydownHandler(index, evt) {
-    if (evt.keyCode === ENTER) {
-      window.showCard(evt.currentTarget, ads[index]);
-    }
+    window.utils.isEnterEvent(evt, index, pinEnterCallback);
+  }
+
+  function pinEnterCallback(evt, index) {
+    window.showCard(evt.currentTarget, ads[index]);
   }
 
   function appendDomElement(pinBaloonArray) {
@@ -168,16 +150,8 @@
       + ', y:' + (pinMain.offsetTop + pinMain.offsetHeight);
   }
 
-  function addFiltersHadlers() {
-    filterType.addEventListener('change', filterTypeChangeHandler);
-    filterPrice.addEventListener('change', filterPriceChangeHandler);
-    filterRooms.addEventListener('change', filterRoomsChangeHandler);
-    filterGuests.addEventListener('change', filterGuestsChangeHandler);
-  }
-
   window.map = {
     displayAddress: displayAddress,
-    displayError: displayError
   };
 
 })();

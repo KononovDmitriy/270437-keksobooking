@@ -81,7 +81,7 @@
   }
 
   function saveErrorHandler(errorMessage) {
-    window.map.displayError(errorMessage);
+    window.utils.displayError(errorMessage);
   }
 
   function formSubmitButtonClickHandler() {

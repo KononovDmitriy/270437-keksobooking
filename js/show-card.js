@@ -1,8 +1,6 @@
 'use strict';
 
 (function () {
-  var ESC = 27;
-
   var html = document.querySelector('html');
   var offerDialog = html.querySelector('#offer-dialog');
   var dialogClose = offerDialog.querySelector('.dialog__close');
@@ -30,9 +28,10 @@
   }
 
   function htmlKeydownHandler(evt) {
-    if (evt.keyCode === ESC &&
-        !offerDialog.classList.contains('hidden')) {
-      closeCard();
+    if (!offerDialog.classList.contains('hidden')) {
+      window.utils.isEscEvent(evt, function () {
+        closeCard();
+      });
     }
   }
 
