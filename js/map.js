@@ -1,8 +1,6 @@
 'use strict';
 
 (function () {
-  var ENTER = 13;
-
   var pinСoordinates = {
     startX: 0,
     startY: 0,
@@ -12,7 +10,7 @@
     locationMaxY: 0,
   };
 
-  var ads = window.data.createArray();
+  var ads;
   var tokyo = document.querySelector('.tokyo');
   var tokyoPinMap = tokyo.querySelector('.tokyo__pin-map');
   var pinMain = tokyoPinMap.querySelector('.pin__main');
@@ -20,10 +18,19 @@
   var filterContainer = tokyo.querySelector('.tokyo__filters-container');
   var address = document.querySelector('#address');
 
-  drawPin();
+  window.backend.load(loadSuccessHandler, loadErrorHandler);
   getLocationLimits();
-  outputAddress();
+  displayAddress();
   dragPin();
+
+  function loadSuccessHandler(response) {
+    ads = response;
+    drawPin();
+  }
+
+  function loadErrorHandler(errorMessage) {
+    window.utils.displayError(errorMessage);
+  }
 
   function drawPin() {
     var pinBaloonArray = [];
@@ -45,9 +52,11 @@
   }
 
   function pinKeydownHandler(index, evt) {
-    if (evt.keyCode === ENTER) {
-      window.showCard(evt.currentTarget, ads[index]);
-    }
+    window.utils.isEnterEvent(evt, index, pinEnterCallback);
+  }
+
+  function pinEnterCallback(evt, index) {
+    window.showCard(evt.currentTarget, ads[index]);
   }
 
   function appendDomElement(pinBaloonArray) {
@@ -91,7 +100,7 @@
     pinСoordinates.startX = evt.clientX;
     pinСoordinates.startY = evt.clientY;
 
-    outputAddress();
+    displayAddress();
   }
 
   function cityMainMouseUpHandler(evt) {
@@ -136,8 +145,13 @@
     }
   }
 
-  function outputAddress() {
-    address.value = 'x: ' + (pinMain.offsetLeft + pinMain.offsetWidth / 2)
-      + ', y: ' + (pinMain.offsetTop + pinMain.offsetHeight);
+  function displayAddress() {
+    address.value = 'x:' + (pinMain.offsetLeft + pinMain.offsetWidth / 2)
+      + ', y:' + (pinMain.offsetTop + pinMain.offsetHeight);
   }
+
+  window.map = {
+    displayAddress: displayAddress,
+  };
+
 })();

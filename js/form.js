@@ -69,8 +69,19 @@
     });
   }
 
-  function noticeFormSubmitHandler() {
+  function noticeFormSubmitHandler(evt) {
+    evt.preventDefault();
+    window.backend.save(new FormData(noticeForm), saveOnLoadHandler,
+        saveErrorHandler);
+  }
+
+  function saveOnLoadHandler() {
     noticeForm.reset();
+    window.map.displayAddress();
+  }
+
+  function saveErrorHandler(errorMessage) {
+    window.utils.displayError(errorMessage);
   }
 
   function formSubmitButtonClickHandler() {

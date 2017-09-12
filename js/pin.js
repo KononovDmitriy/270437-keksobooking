@@ -41,8 +41,16 @@
     }
   }
 
+  function hidePins() {
+    var pins = tokyoPinMap.querySelectorAll('.pin:not(.pin__main)');
+    pins.forEach(function (value) {
+      value.remove();
+    });
+  }
+
   window.pin = {
     createPin: createPin,
-    togglePin: togglePin
+    togglePin: togglePin,
+    hidePins: hidePins
   };
 })();
