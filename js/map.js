@@ -10,13 +10,28 @@
     locationMaxY: 0,
   };
 
+  var filterPrices = {
+    LOW: 10000,
+    HIGHT: 50000
+  };
+
   var ads;
+  var adsFitered;
+
   var tokyo = document.querySelector('.tokyo');
   var tokyoPinMap = tokyo.querySelector('.tokyo__pin-map');
   var pinMain = tokyoPinMap.querySelector('.pin__main');
   var city = tokyo.querySelector('.tokyo img');
   var filterContainer = tokyo.querySelector('.tokyo__filters-container');
   var address = document.querySelector('#address');
+  var filtersContainer = tokyo.querySelector('.tokyo__filters-container');
+  var filterType = filtersContainer.querySelector('#housing_type');
+  var filterPrice = filtersContainer.querySelector('#housing_price');
+  var filterRooms = filtersContainer.querySelector('#housing_room-number');
+  var filterGuests = filtersContainer.querySelector('#housing_guests-number');
+  var filterFeatures = filtersContainer.querySelectorAll('#housing_features [name = \'feature\']');
+
+  addFiltersHadlers();
 
   window.backend.load(loadSuccessHandler, loadErrorHandler);
   getLocationLimits();
@@ -148,6 +163,40 @@
   function displayAddress() {
     address.value = 'x:' + (pinMain.offsetLeft + pinMain.offsetWidth / 2)
       + ', y:' + (pinMain.offsetTop + pinMain.offsetHeight);
+  }
+
+  function addFiltersHadlers() {
+    filterType.addEventListener('change', filterChangeHandler);
+    filterPrice.addEventListener('change', filterChangeHandler);
+    filterRooms.addEventListener('change', filterChangeHandler);
+    filterGuests.addEventListener('change', filterChangeHandler);
+    filterFeatures.forEach(function (value) {
+      value.addEventListener('change', filterChangeHandler);
+    });
+  }
+
+  function filterChangeHandler() {
+    adsFitered = ads.filter(function (element) {
+      if (filterType.value !== 'any') {
+        return element.offer.type === filterType.value;
+      }
+      return true;
+    });
+
+    console.dir(adsFitered);
+
+    adsFitered = adsFitered.filter(function (element) {
+      switch (filterPrice.value) {
+        case 'low':
+          return element.offer.price <= filterPrices.LOW;
+        case 'hight':
+          return element.offer.price >= filterPrices.HIGHT;
+        case 'middle':
+          return element.offer.price >= filterPrices.LOW &&
+            element.offer.price <= filterPrices.HIGHT;
+      }
+    });
+    console.dir(adsFitered);
   }
 
   window.map = {
