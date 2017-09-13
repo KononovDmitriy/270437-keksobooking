@@ -182,7 +182,7 @@
   }
 
   function applyFilters(elementsArray) {
-    var par = [
+    var filtersOptions = [
       {elementValue: filterType.value, key: 'type', isNumber: false},
       {elementValue: filterRooms.value, key: 'rooms', isNumber: true},
       {elementValue: filterGuests.value, key: 'guests', isNumber: true}
@@ -190,7 +190,7 @@
 
     var features = true;
 
-    par.forEach(function (value) {
+    filtersOptions.forEach(function (value) {
       if (value.elementValue !== 'any') {
         value.elementValue = value.isNumber ? Number(value.elementValue) : value.elementValue;
 
