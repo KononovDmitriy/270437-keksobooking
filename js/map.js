@@ -10,13 +10,34 @@
     locationMaxY: 0,
   };
 
+  var filterPrices = {
+    LOW: 10000,
+    HIGHT: 50000
+  };
+
   var ads;
+  var adsFiltered;
+
   var tokyo = document.querySelector('.tokyo');
   var tokyoPinMap = tokyo.querySelector('.tokyo__pin-map');
   var pinMain = tokyoPinMap.querySelector('.pin__main');
   var city = tokyo.querySelector('.tokyo img');
   var filterContainer = tokyo.querySelector('.tokyo__filters-container');
   var address = document.querySelector('#address');
+  var tokyoFilters = tokyo.querySelector('.tokyo__filters');
+  var filterType = tokyoFilters.querySelector('#housing_type');
+  var filterPrice = tokyoFilters.querySelector('#housing_price');
+  var filterRooms = tokyoFilters.querySelector('#housing_room-number');
+  var filterGuests = tokyoFilters.querySelector('#housing_guests-number');
+  var filterFeatures = tokyoFilters.querySelectorAll('#housing_features [name = \'feature\']');
+
+  var functionsFilters = [applyFilters, applyFiltersPrice, applyFiltersFeatures];
+
+  tokyoFilters.addEventListener('change', function () {
+    adsFiltered = filterAds();
+    window.pin.hidePins();
+    window.utils.debounce(drawPin);
+  });
 
   window.backend.load(loadSuccessHandler, loadErrorHandler);
   getLocationLimits();
@@ -25,6 +46,7 @@
 
   function loadSuccessHandler(response) {
     ads = response;
+    adsFiltered = filterAds();
     drawPin();
   }
 
@@ -34,7 +56,7 @@
 
   function drawPin() {
     var pinBaloonArray = [];
-    ads.forEach(function (value, index) {
+    adsFiltered.forEach(function (value, index) {
       var pinBaloon = window.pin.createPin(value);
       pinAddHandler(pinBaloon, index);
       pinBaloonArray[index] = pinBaloon;
@@ -48,7 +70,7 @@
   }
 
   function pinClickHandler(index, evt) {
-    window.showCard(evt.currentTarget, ads[index]);
+    window.showCard(evt.currentTarget, adsFiltered[index]);
   }
 
   function pinKeydownHandler(index, evt) {
@@ -148,6 +170,58 @@
   function displayAddress() {
     address.value = 'x:' + (pinMain.offsetLeft + pinMain.offsetWidth / 2)
       + ', y:' + (pinMain.offsetTop + pinMain.offsetHeight);
+  }
+
+  function filterAds() {
+    var adsArray = ads.filter(function (ad) {
+      return functionsFilters.every(function (func) {
+        return func(ad);
+      });
+    });
+    return adsArray;
+  }
+
+  function applyFilters(elementsArray) {
+    var filtersOptions = [
+      {elementValue: filterType.value, key: 'type', isNumber: false},
+      {elementValue: filterRooms.value, key: 'rooms', isNumber: true},
+      {elementValue: filterGuests.value, key: 'guests', isNumber: true}
+    ];
+
+    var features = true;
+
+    filtersOptions.forEach(function (value) {
+      if (value.elementValue !== 'any') {
+        value.elementValue = value.isNumber ? Number(value.elementValue) : value.elementValue;
+
+        features = features && (elementsArray.offer[value.key] === value.elementValue);
+      }
+    });
+    return features;
+  }
+
+  function applyFiltersPrice(elementsArray) {
+    switch (filterPrice.value) {
+      case 'low':
+        return elementsArray.offer.price <= filterPrices.LOW;
+      case 'high':
+        return elementsArray.offer.price >= filterPrices.HIGHT;
+      case 'middle':
+        return elementsArray.offer.price >= filterPrices.LOW &&
+          elementsArray.offer.price <= filterPrices.HIGHT;
+    }
+    return true;
+  }
+
+  function applyFiltersFeatures(elementsArray) {
+    var features = true;
+
+    filterFeatures.forEach(function (featureElement) {
+      if (featureElement.checked) {
+        features = features && elementsArray.offer.features.includes(featureElement.value);
+      }
+    });
+    return features;
   }
 
   window.map = {
