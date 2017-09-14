@@ -18,6 +18,12 @@
   var filterGuests = tokyoFilters.querySelector('#housing_guests-number');
   var filterFeatures = tokyoFilters.querySelectorAll('#housing_features [name = \'feature\']');
 
+  var filtersOptions = [
+    {elementValue: filterType.value, key: 'type', isNumber: false},
+    {elementValue: filterRooms.value, key: 'rooms', isNumber: true},
+    {elementValue: filterGuests.value, key: 'guests', isNumber: true}
+  ];
+
   var functionsFilters = [applyFilters, applyFiltersPrice, applyFiltersFeatures];
 
   tokyoFilters.addEventListener('change', function () {
@@ -76,12 +82,6 @@
   }
 
   function applyFilters(elementsArray) {
-    var filtersOptions = [
-      {elementValue: filterType.value, key: 'type', isNumber: false},
-      {elementValue: filterRooms.value, key: 'rooms', isNumber: true},
-      {elementValue: filterGuests.value, key: 'guests', isNumber: true}
-    ];
-
     var features = true;
 
     filtersOptions.forEach(function (value) {
@@ -109,12 +109,12 @@
 
   function applyFiltersFeatures(elementsArray) {
     var features = true;
+    var filterFeaturesArray = Array.prototype.slice.call(filterFeatures, 0);
 
-    filterFeatures.forEach(function (featureElement) {
-      if (featureElement.checked) {
-        features = features && elementsArray.offer.features.includes(featureElement.value);
-      }
+    filterFeaturesArray.forEach(function (featuresElement) {
+      features = features && elementsArray.offer.features.includes(featuresElement.value);
     });
+
     return features;
   }
 
