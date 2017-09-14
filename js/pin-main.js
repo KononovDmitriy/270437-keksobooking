@@ -17,7 +17,6 @@
   var filterContainer = tokyo.querySelector('.tokyo__filters-container');
 
   getLocationLimits();
-  window.displayAddress();
   dragMainPin();
 
   function dragMainPin() {
@@ -52,7 +51,7 @@
     pinСoordinates.startX = evt.clientX;
     pinСoordinates.startY = evt.clientY;
 
-    window.displayAddress();
+    window.setAddress(getAddress());
   }
 
   function cityMainMouseUpHandler(evt) {
@@ -95,6 +94,11 @@
       pinMain.style.top = (pinMain.offsetTop -
         (pinСoordinates.startY - clientY)) + 'px';
     }
+  }
+
+  function getAddress() {
+    return 'x:' + (pinMain.offsetLeft + pinMain.offsetWidth / 2)
+      + ', y:' + (pinMain.offsetTop + pinMain.offsetHeight);
   }
 
 })();

@@ -32,37 +32,49 @@
   var formSubmitButton = noticeForm.querySelector('.form__submit');
   var capacityField = document.querySelector('#capacity');
   var address = noticeForm.querySelector('#address');
-  var pinMain = document.querySelector('.pin__main');
 
-  initializeForm();
-  addFormHandlers();
+  noticeForm.addEventListener('submit', noticeFormSubmitHandler);
+  formSubmitButton.addEventListener('click', formSubmitButtonClickHandler);
+  buildingType.addEventListener('change', typeChangeHandler);
+  timeIn.addEventListener('change', timeInHandler);
+  timeOut.addEventListener('change', timeOutHandler);
+  roomNumber.addEventListener('change', roomNumberChangeHandler);
+  address.addEventListener('input', addressInputHandler);
+
+  window.synchronizeFields(buildingType, price, PRICE, typeChangeCallback);
+  window.synchronizeFields(roomNumber, guests, CAPACITY_NUMBERS,
+      roomNumberChangeCallback);
+
+  function addressInputHandler() {
+    address.value = '';
+  }
 
   function timeInHandler() {
-    window.synchronizeFields(timeIn, timeOut, TIME, timeChangeCallBack);
+    window.synchronizeFields(timeIn, timeOut, TIME, timeChangeCallback);
   }
 
   function timeOutHandler() {
-    window.synchronizeFields(timeOut, timeIn, TIME, timeChangeCallBack);
+    window.synchronizeFields(timeOut, timeIn, TIME, timeChangeCallback);
   }
 
-  function timeChangeCallBack(element, value) {
+  function timeChangeCallback(element, value) {
     element.value = value;
   }
 
   function typeChangeHandler() {
-    window.synchronizeFields(buildingType, price, PRICE, typeChangeCallBack);
+    window.synchronizeFields(buildingType, price, PRICE, typeChangeCallback);
   }
 
-  function typeChangeCallBack(element, value) {
+  function typeChangeCallback(element, value) {
     element.setAttribute('min', value);
   }
 
   function roomNumberChangeHandler() {
     window.synchronizeFields(roomNumber, guests, CAPACITY_NUMBERS,
-        roomNumberChangeCallBack);
+        roomNumberChangeCallback);
   }
 
-  function roomNumberChangeCallBack(elements, value) {
+  function roomNumberChangeCallback(elements, value) {
     elements.forEach(function (elementent) {
       elementent.disabled = !value.includes(elementent.value);
 
@@ -80,7 +92,6 @@
 
   function saveOnLoadHandler() {
     noticeForm.reset();
-    displayAddress();
   }
 
   function saveErrorHandler(errorMessage) {
@@ -95,26 +106,10 @@
     });
   }
 
-  function initializeForm() {
-    window.synchronizeFields(buildingType, price, PRICE, typeChangeCallBack);
-    window.synchronizeFields(roomNumber, guests, CAPACITY_NUMBERS,
-        roomNumberChangeCallBack);
+  function setAddress(value) {
+    address.value = value;
   }
 
-  function addFormHandlers() {
-    noticeForm.addEventListener('submit', noticeFormSubmitHandler);
-    formSubmitButton.addEventListener('click', formSubmitButtonClickHandler);
-    buildingType.addEventListener('change', typeChangeHandler);
-    timeIn.addEventListener('change', timeInHandler);
-    timeOut.addEventListener('change', timeOutHandler);
-    roomNumber.addEventListener('change', roomNumberChangeHandler);
-  }
-
-  function displayAddress() {
-    address.value = 'x:' + (pinMain.offsetLeft + pinMain.offsetWidth / 2)
-      + ', y:' + (pinMain.offsetTop + pinMain.offsetHeight);
-  }
-
-  window.displayAddress = displayAddress;
+  window.setAddress = setAddress;
 
 })();
