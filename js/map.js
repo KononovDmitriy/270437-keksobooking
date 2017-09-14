@@ -35,8 +35,7 @@
   tokyoFilters.addEventListener('change', function () {
     window.closeCard();
     adsFiltered = filterAds();
-    window.pin.hidePins();
-    window.utils.debounce(drawPin);
+    window.utils.debounce(loadSuccessCallback);
   });
 
   window.backend.load(loadSuccessHandler, loadErrorHandler);
@@ -53,6 +52,11 @@
 
   function loadErrorHandler(errorMessage) {
     window.utils.displayError(errorMessage);
+  }
+
+  function loadSuccessCallback() {
+    window.pin.hidePins();
+    drawPin();
   }
 
   function drawPin() {
