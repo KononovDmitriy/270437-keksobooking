@@ -6,7 +6,8 @@
   var offerDialog = html.querySelector('#offer-dialog');
   var dialogClose = offerDialog.querySelector('.dialog__close');
 
-  addDialogCloseHandler();
+  dialogClose.addEventListener('click', dialogCloseClickHandler);
+  html.addEventListener('keydown', htmlKeydownHandler);
   closeCard();
 
   function dialogInsertDom(elementFromTemplate) {
@@ -17,11 +18,6 @@
   function closeCard() {
     offerDialog.classList.add('hidden');
     window.pin.togglePin();
-  }
-
-  function addDialogCloseHandler() {
-    dialogClose.addEventListener('click', dialogCloseClickHandler);
-    html.addEventListener('keydown', htmlKeydownHandler);
   }
 
   function dialogCloseClickHandler(evt) {

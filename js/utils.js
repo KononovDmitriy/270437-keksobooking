@@ -30,11 +30,11 @@
         action();
       }
     },
-    debounce: function (fun) {
+    debounce: function (funс) {
       if (lastTimeout) {
         window.clearTimeout(lastTimeout);
       }
-      lastTimeout = window.setTimeout(fun, DEBOUNCE_INTERVAL);
+      lastTimeout = window.setTimeout(funс, DEBOUNCE_INTERVAL);
     },
     displayError: displayError
   };

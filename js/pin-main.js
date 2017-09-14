@@ -17,11 +17,8 @@
   var filterContainer = tokyo.querySelector('.tokyo__filters-container');
 
   getLocationLimits();
-  dragMainPin();
 
-  function dragMainPin() {
-    pinMain.addEventListener('mousedown', pinMainMouseDownHandler);
-  }
+  pinMain.addEventListener('mousedown', pinMainMouseDownHandler);
 
   function pinMainMouseDownHandler(evt) {
     evt.preventDefault();
