@@ -30,6 +30,8 @@
   var guests = noticeForm.querySelectorAll('#capacity option');
   var formSubmitButton = noticeForm.querySelector('.form__submit');
   var capacityField = document.querySelector('#capacity');
+  var address = noticeForm.querySelector('#address');
+  var pinMain = document.querySelector('.pin__main');
 
   initializeForm();
   addFormHandlers();
@@ -77,7 +79,7 @@
 
   function saveOnLoadHandler() {
     noticeForm.reset();
-    window.map.displayAddress();
+    displayAddress();
   }
 
   function saveErrorHandler(errorMessage) {
@@ -106,5 +108,12 @@
     timeOut.addEventListener('change', timeOutHandler);
     roomNumber.addEventListener('change', roomNumberChangeHandler);
   }
+
+  function displayAddress() {
+    address.value = 'x:' + (pinMain.offsetLeft + pinMain.offsetWidth / 2)
+      + ', y:' + (pinMain.offsetTop + pinMain.offsetHeight);
+  }
+
+  window.displayAddress = displayAddress;
 
 })();

@@ -23,7 +23,6 @@
   var pinMain = tokyoPinMap.querySelector('.pin__main');
   var city = tokyo.querySelector('.tokyo img');
   var filterContainer = tokyo.querySelector('.tokyo__filters-container');
-  var address = document.querySelector('#address');
   var tokyoFilters = tokyo.querySelector('.tokyo__filters');
   var filterType = tokyoFilters.querySelector('#housing_type');
   var filterPrice = tokyoFilters.querySelector('#housing_price');
@@ -34,6 +33,7 @@
   var functionsFilters = [applyFilters, applyFiltersPrice, applyFiltersFeatures];
 
   tokyoFilters.addEventListener('change', function () {
+    window.closeCard();
     adsFiltered = filterAds();
     window.pin.hidePins();
     window.utils.debounce(drawPin);
@@ -41,12 +41,13 @@
 
   window.backend.load(loadSuccessHandler, loadErrorHandler);
   getLocationLimits();
-  displayAddress();
+  window.displayAddress();
   dragPin();
 
   function loadSuccessHandler(response) {
     ads = response;
     adsFiltered = filterAds();
+    adsFiltered = adsFiltered.slice(0, 3);
     drawPin();
   }
 
@@ -122,7 +123,7 @@
     pinСoordinates.startX = evt.clientX;
     pinСoordinates.startY = evt.clientY;
 
-    displayAddress();
+    window.displayAddress();
   }
 
   function cityMainMouseUpHandler(evt) {
@@ -165,11 +166,6 @@
       pinMain.style.top = (pinMain.offsetTop -
         (pinСoordinates.startY - clientY)) + 'px';
     }
-  }
-
-  function displayAddress() {
-    address.value = 'x:' + (pinMain.offsetLeft + pinMain.offsetWidth / 2)
-      + ', y:' + (pinMain.offsetTop + pinMain.offsetHeight);
   }
 
   function filterAds() {
@@ -223,9 +219,5 @@
     });
     return features;
   }
-
-  window.map = {
-    displayAddress: displayAddress,
-  };
 
 })();

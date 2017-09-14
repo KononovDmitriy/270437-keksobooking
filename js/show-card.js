@@ -23,7 +23,8 @@
     html.addEventListener('keydown', htmlKeydownHandler);
   }
 
-  function dialogCloseClickHandler() {
+  function dialogCloseClickHandler(evt) {
+    evt.preventDefault();
     closeCard();
   }
 
@@ -43,5 +44,6 @@
   }
 
   window.showCard = showCard;
+  window.closeCard = closeCard;
 
 })();
