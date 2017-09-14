@@ -21,7 +21,7 @@
   var functionsFilters = [applyFilters, applyFiltersPrice, applyFiltersFeatures];
 
   tokyoFilters.addEventListener('change', function () {
-    window.closeCard();
+    window.showCard.closeCard();
     adsFiltered = filterAds();
     window.utils.debounce(loadSuccessCallback);
   });
@@ -63,7 +63,7 @@
   }
 
   function pinClickCallback(element, index) {
-    window.showCard(element, adsFiltered[index]);
+    window.showCard.showCard(element, adsFiltered[index]);
   }
 
   function filterAds() {

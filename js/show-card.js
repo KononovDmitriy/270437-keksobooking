@@ -40,7 +40,9 @@
     window.pin.togglePin(element);
   }
 
-  window.showCard = showCard;
-  window.closeCard = closeCard;
+  window.showCard = {
+    showCard: showCard,
+    closeCard: closeCard
+  };
 
 })();

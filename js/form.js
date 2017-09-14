@@ -32,6 +32,7 @@
   var formSubmitButton = noticeForm.querySelector('.form__submit');
   var capacityField = document.querySelector('#capacity');
   var address = noticeForm.querySelector('#address');
+  var formElements = noticeForm.querySelectorAll('input:not([type="checkbox"])');
 
   noticeForm.addEventListener('submit', noticeFormSubmitHandler);
   formSubmitButton.addEventListener('click', formSubmitButtonClickHandler);
@@ -75,13 +76,13 @@
   }
 
   function roomNumberChangeCallback(elements, value) {
-    elements.forEach(function (elementent) {
-      elementent.disabled = !value.includes(elementent.value);
+    for (var i = 0; i < elements.length; i++) {
+      elements[i].disabled = !value.includes(elements[i].value);
 
-      if (!elementent.disabled) {
-        capacityField.value = elementent.value;
+      if (!elements[i].disabled) {
+        capacityField.value = elements[i].value;
       }
-    });
+    }
   }
 
   function noticeFormSubmitHandler(evt) {
@@ -99,11 +100,9 @@
   }
 
   function formSubmitButtonClickHandler() {
-    var elementents = noticeForm.querySelectorAll('input:not([type="checkbox"])');
-
-    elementents.forEach(function (elementent) {
-      elementent.classList.toggle('invalid', !elementent.validity.valid);
-    });
+    for (var i = 0; i < formElements.length; i++) {
+      formElements[i].classList.toggle('invalid', !formElements[i].validity.valid);
+    }
   }
 
   function setAddress(value) {
