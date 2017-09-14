@@ -1,6 +1,7 @@
 'use strict';
 
 (function () {
+
   var randomBorders = {
     PRICE_MIN: 1000,
     PRICE_MAX: 1000001,
@@ -117,6 +118,7 @@
   window.data = {
     createArray: createArray
   };
+
 })();
 
 

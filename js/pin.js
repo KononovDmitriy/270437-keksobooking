@@ -1,6 +1,7 @@
 'use strict';
 
 (function () {
+
   var domElementAttributs = {
     DIV_CLASS: 'pin',
     IMG_CLASS: 'rounded',
@@ -48,9 +49,33 @@
     });
   }
 
+  function pinAddHandler(pinElement, index, clickCallback) {
+    pinElement.addEventListener('click', pinClickHandler.bind(null, index, clickCallback));
+    pinElement.addEventListener('keydown', pinKeydownHandler.bind(null, index, clickCallback));
+  }
+
+  function pinClickHandler(index, clickCallback, evt) {
+    clickCallback(evt.currentTarget, index);
+  }
+
+  function pinKeydownHandler(index, clickCallback, evt) {
+    window.utils.isEnterEvent(evt, index, pinEnterCallback, clickCallback);
+  }
+
+  function pinEnterCallback(evt, index, clickCallback) {
+    clickCallback(evt.currentTarget, index);
+  }
+
+  function getPin(value, index, clickCallback) {
+    var pinBaloon = createPin(value);
+    pinAddHandler(pinBaloon, index, clickCallback);
+    return pinBaloon;
+  }
+
   window.pin = {
-    createPin: createPin,
+    getPin: getPin,
     togglePin: togglePin,
     hidePins: hidePins
   };
+
 })();

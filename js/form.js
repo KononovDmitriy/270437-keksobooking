@@ -1,6 +1,7 @@
 'use strict';
 
 (function () {
+
   var CAPACITY_NUMBERS = {
     '1': ['1'],
     '2': ['1', '2'],

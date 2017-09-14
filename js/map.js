@@ -1,14 +1,6 @@
 'use strict';
 
 (function () {
-  var pinСoordinates = {
-    startX: 0,
-    startY: 0,
-    locationMinX: 0,
-    locationMaxX: 0,
-    locationMinY: 0,
-    locationMaxY: 0,
-  };
 
   var filterPrices = {
     LOW: 10000,
@@ -18,12 +10,8 @@
   var ads;
   var adsFiltered;
 
-  var tokyo = document.querySelector('.tokyo');
-  var tokyoPinMap = tokyo.querySelector('.tokyo__pin-map');
-  var pinMain = tokyoPinMap.querySelector('.pin__main');
-  var city = tokyo.querySelector('.tokyo img');
-  var filterContainer = tokyo.querySelector('.tokyo__filters-container');
-  var tokyoFilters = tokyo.querySelector('.tokyo__filters');
+  var tokyoPinMap = document.querySelector('.tokyo__pin-map');
+  var tokyoFilters = document.querySelector('.tokyo__filters');
   var filterType = tokyoFilters.querySelector('#housing_type');
   var filterPrice = tokyoFilters.querySelector('#housing_price');
   var filterRooms = tokyoFilters.querySelector('#housing_room-number');
@@ -39,15 +27,12 @@
   });
 
   window.backend.load(loadSuccessHandler, loadErrorHandler);
-  getLocationLimits();
-  window.displayAddress();
-  dragPin();
 
   function loadSuccessHandler(response) {
     ads = response;
     adsFiltered = filterAds();
     adsFiltered = adsFiltered.slice(0, 3);
-    drawPin();
+    drawPins();
   }
 
   function loadErrorHandler(errorMessage) {
@@ -56,37 +41,19 @@
 
   function loadSuccessCallback() {
     window.pin.hidePins();
-    drawPin();
+    drawPins();
   }
 
-  function drawPin() {
+  function drawPins() {
     var pinBaloonArray = [];
     adsFiltered.forEach(function (value, index) {
-      var pinBaloon = window.pin.createPin(value);
-      pinAddHandler(pinBaloon, index);
+      var pinBaloon = window.pin.getPin(value, index, pinClickCallback);
       pinBaloonArray[index] = pinBaloon;
     });
-    appendDomElement(pinBaloonArray);
+    addPinToDom(pinBaloonArray);
   }
 
-  function pinAddHandler(pin, index) {
-    pin.addEventListener('click', pinClickHandler.bind(null, index));
-    pin.addEventListener('keydown', pinKeydownHandler.bind(null, index));
-  }
-
-  function pinClickHandler(index, evt) {
-    window.showCard(evt.currentTarget, adsFiltered[index]);
-  }
-
-  function pinKeydownHandler(index, evt) {
-    window.utils.isEnterEvent(evt, index, pinEnterCallback);
-  }
-
-  function pinEnterCallback(evt, index) {
-    window.showCard(evt.currentTarget, ads[index]);
-  }
-
-  function appendDomElement(pinBaloonArray) {
+  function addPinToDom(pinBaloonArray) {
     var fragment = document.createDocumentFragment();
 
     pinBaloonArray.forEach(function (domElement) {
@@ -95,81 +62,8 @@
     tokyoPinMap.appendChild(fragment);
   }
 
-  function dragPin() {
-    pinMain.addEventListener('mousedown', pinMainMouseDownHandler);
-  }
-
-  function pinMainMouseDownHandler(evt) {
-    evt.preventDefault();
-
-    pinСoordinates.startX = evt.clientX;
-    pinСoordinates.startY = evt.clientY;
-
-    document.addEventListener('mouseup', cityMainMouseUpHandler);
-    document.addEventListener('mousemove', cityMainMouseMoveHandler);
-  }
-
-  function cityMainMouseMoveHandler(evt) {
-    evt.preventDefault();
-
-    if (evt.movementX > 0) {
-      pinMoveRight(evt.clientX);
-    } else {
-      pinMoveLeft(evt.clientX);
-    }
-
-    if (evt.movementY > 0) {
-      pinMoveDown(evt.clientY);
-    } else {
-      pinMoveUp(evt.clientY);
-    }
-
-    pinСoordinates.startX = evt.clientX;
-    pinСoordinates.startY = evt.clientY;
-
-    window.displayAddress();
-  }
-
-  function cityMainMouseUpHandler(evt) {
-    evt.preventDefault();
-
-    document.removeEventListener('mousemove', cityMainMouseMoveHandler);
-    document.removeEventListener('mouseup', cityMainMouseUpHandler);
-  }
-
-  function getLocationLimits() {
-    pinСoordinates.locationMaxX = city.clientWidth - pinMain.clientWidth;
-
-    pinСoordinates.locationMaxY = city.clientHeight -
-      filterContainer.clientHeight - pinMain.clientHeight;
-  }
-
-  function pinMoveRight(clientX) {
-    if (pinMain.offsetLeft <= pinСoordinates.locationMaxX) {
-      pinMain.style.left = (pinMain.offsetLeft +
-        (clientX - pinСoordinates.startX)) + 'px';
-    }
-  }
-
-  function pinMoveLeft(clientX) {
-    if (pinMain.offsetLeft >= 0) {
-      pinMain.style.left = (pinMain.offsetLeft -
-        (pinСoordinates.startX - clientX)) + 'px';
-    }
-  }
-
-  function pinMoveDown(clientY) {
-    if (pinMain.offsetTop <= pinСoordinates.locationMaxY) {
-      pinMain.style.top = (pinMain.offsetTop +
-        (clientY - pinСoordinates.startY)) + 'px';
-    }
-  }
-
-  function pinMoveUp(clientY) {
-    if (pinMain.offsetTop >= 0) {
-      pinMain.style.top = (pinMain.offsetTop -
-        (pinСoordinates.startY - clientY)) + 'px';
-    }
+  function pinClickCallback(element, index) {
+    window.showCard(element, adsFiltered[index]);
   }
 
   function filterAds() {

@@ -1,6 +1,7 @@
 'use strict';
 
 (function () {
+
   var html = document.querySelector('html');
   var offerDialog = html.querySelector('#offer-dialog');
   var dialogClose = offerDialog.querySelector('.dialog__close');

@@ -1,6 +1,7 @@
 'use strict';
 
 (function () {
+
   var LODGE_TYPE = {
     flat: 'Квартира',
     house: 'Дом',
@@ -60,5 +61,6 @@
   window.card = {
     createDialog: createDialogPanelFromTemplate
   };
+
 })();
 

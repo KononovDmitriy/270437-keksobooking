@@ -1,6 +1,7 @@
 'use strict';
 
 (function () {
+
   var SERVER_URL = 'https://1510.dump.academy/keksobooking';
 
   function setup(onLoad, onError) {
@@ -40,4 +41,5 @@
       xhr.send(data);
     }
   };
+
 })();
