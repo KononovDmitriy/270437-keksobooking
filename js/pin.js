@@ -44,7 +44,8 @@
 
   function hidePins() {
     var pins = tokyoPinMap.querySelectorAll('.pin:not(.pin__main)');
-    pins.forEach(function (value) {
+    var pinsArray = Array.prototype.slice.call(pins, 0);
+    pinsArray.forEach(function (value) {
       value.remove();
     });
   }

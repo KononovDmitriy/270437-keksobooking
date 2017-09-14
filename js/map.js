@@ -18,13 +18,8 @@
   var filterGuests = tokyoFilters.querySelector('#housing_guests-number');
   var filterFeatures = tokyoFilters.querySelectorAll('#housing_features [name = \'feature\']');
 
-  var filtersOptions = [
-    {elementValue: filterType.value, key: 'type', isNumber: false},
-    {elementValue: filterRooms.value, key: 'rooms', isNumber: true},
-    {elementValue: filterGuests.value, key: 'guests', isNumber: true}
-  ];
-
-  var functionsFilters = [applyFilters, applyFiltersPrice, applyFiltersFeatures];
+  var functionsFilters = [applyFilterTypes, applyFiltersPrice, applyFilterRooms,
+    applyFilterGuests, applyFiltersFeatures];
 
   tokyoFilters.addEventListener('change', function () {
     window.showCard.closeCard();
@@ -81,21 +76,27 @@
     return adsArray;
   }
 
-  function applyFilters(elementsArray) {
-    var features = true;
+  function applyFilterTypes(elementsArray) {
+    if (filterType.value !== 'any') {
+      return (elementsArray.offer['type'] === filterType.value);
+    }
+    return true;
+  }
 
-    filtersOptions[0]['elementValue'] = filterType.value;
-    filtersOptions[1]['elementValue'] = filterRooms.value;
-    filtersOptions[2]['elementValue'] = filterGuests.value;
+  function applyFilterRooms(elementsArray) {
+    if (filterRooms.value !== 'any') {
+      var rooms = Number(filterRooms.value);
+      return (elementsArray.offer['rooms'] === rooms);
+    }
+    return true;
+  }
 
-    filtersOptions.forEach(function (value) {
-      if (value.elementValue !== 'any') {
-        value.elementValue = value.isNumber ? Number(value.elementValue) : value.elementValue;
-
-        features = features && (elementsArray.offer[value.key] === value.elementValue);
-      }
-    });
-    return features;
+  function applyFilterGuests(elementsArray) {
+    if (filterGuests.value !== 'any') {
+      var guests = Number(filterGuests.value);
+      return (elementsArray.offer['guests'] === guests);
+    }
+    return true;
   }
 
   function applyFiltersPrice(elementsArray) {
