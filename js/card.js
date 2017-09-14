@@ -33,7 +33,7 @@
 
   function createDialogPanelFromTemplate(ads) {
     var template = lodgeTemplate.content.cloneNode(true);
-    var lodgeElement = template.querySelector('.lodge__photos');
+    var lodge = template.querySelector('.lodge__photos');
 
     template.querySelector('.lodge__title').textContent = ads.offer.title;
     template.querySelector('.lodge__address').textContent = ads.offer.address;
@@ -51,7 +51,7 @@
     dialogTitleImg.src = ads.author.avatar;
 
     ads.offer.photos.forEach(function (photoUrl) {
-      lodgeElement.appendChild(getPhotoElement(photoUrl));
+      lodge.appendChild(getPhotoElement(photoUrl));
     });
 
     createFeaturesElements(template, ads.offer.features);

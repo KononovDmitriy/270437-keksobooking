@@ -32,14 +32,14 @@
   var formSubmitButton = noticeForm.querySelector('.form__submit');
   var capacityField = document.querySelector('#capacity');
   var address = noticeForm.querySelector('#address');
-  var formElements = noticeForm.querySelectorAll('input:not([type="checkbox"])');
-  var formElementsArray = Array.prototype.slice.call(formElements, 0);
+  var formInputs = noticeForm.querySelectorAll('input:not([type="checkbox"])');
+  var formInputsArray = Array.prototype.slice.call(formInputs, 0);
 
   noticeForm.addEventListener('submit', noticeFormSubmitHandler);
   formSubmitButton.addEventListener('click', formSubmitButtonClickHandler);
-  buildingType.addEventListener('change', typeChangeHandler);
-  timeIn.addEventListener('change', timeInHandler);
-  timeOut.addEventListener('change', timeOutHandler);
+  buildingType.addEventListener('change', buildingTypeChangeHandler);
+  timeIn.addEventListener('change', timeInChangeHandler);
+  timeOut.addEventListener('change', timeOutChangeHandler);
   roomNumber.addEventListener('change', roomNumberChangeHandler);
   address.addEventListener('input', addressInputHandler);
 
@@ -51,11 +51,11 @@
     address.value = '';
   }
 
-  function timeInHandler() {
+  function timeInChangeHandler() {
     window.synchronizeFields(timeIn, timeOut, TIME, timeChangeCallback);
   }
 
-  function timeOutHandler() {
+  function timeOutChangeHandler() {
     window.synchronizeFields(timeOut, timeIn, TIME, timeChangeCallback);
   }
 
@@ -63,7 +63,7 @@
     element.value = value;
   }
 
-  function typeChangeHandler() {
+  function buildingTypeChangeHandler() {
     window.synchronizeFields(buildingType, price, PRICE, typeChangeCallback);
   }
 
@@ -103,7 +103,7 @@
   }
 
   function formSubmitButtonClickHandler() {
-    formElementsArray.forEach(function (element) {
+    formInputsArray.forEach(function (element) {
       element.classList.toggle('invalid', !element.validity.valid);
     });
   }

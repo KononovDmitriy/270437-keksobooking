@@ -29,23 +29,23 @@
   tokyoFilters.addEventListener('change', function () {
     window.showCard.closeCard();
     adsFiltered = filterAds();
-    window.utils.debounce(loadSuccessCallback);
+    window.utils.debounce(loadDebounceCallback);
   });
 
-  window.backend.load(loadSuccessHandler, loadErrorHandler);
+  window.backend.load(loadSuccessCallback, loadErrorCallback);
 
-  function loadSuccessHandler(response) {
+  function loadSuccessCallback(response) {
     ads = response;
     adsFiltered = filterAds();
     adsFiltered = adsFiltered.slice(0, 3);
     drawPins();
   }
 
-  function loadErrorHandler(errorMessage) {
+  function loadErrorCallback(errorMessage) {
     window.utils.displayError(errorMessage);
   }
 
-  function loadSuccessCallback() {
+  function loadDebounceCallback() {
     window.pin.hidePins();
     drawPins();
   }
@@ -69,7 +69,7 @@
   }
 
   function pinClickCallback(element, index) {
-    window.showCard.showCard(element, adsFiltered[index]);
+    window.showCard.openCard(element, adsFiltered[index]);
   }
 
   function filterAds() {
@@ -83,6 +83,10 @@
 
   function applyFilters(elementsArray) {
     var features = true;
+
+    filtersOptions[0]['elementValue'] = filterType.value;
+    filtersOptions[1]['elementValue'] = filterRooms.value;
+    filtersOptions[2]['elementValue'] = filterGuests.value;
 
     filtersOptions.forEach(function (value) {
       if (value.elementValue !== 'any') {
@@ -111,10 +115,11 @@
     var features = true;
     var filterFeaturesArray = Array.prototype.slice.call(filterFeatures, 0);
 
-    filterFeaturesArray.forEach(function (featuresElement) {
-      features = features && elementsArray.offer.features.includes(featuresElement.value);
+    filterFeaturesArray.forEach(function (featureElement) {
+      if (featureElement.checked) {
+        features = features && elementsArray.offer.features.includes(featureElement.value);
+      }
     });
-
     return features;
   }
 

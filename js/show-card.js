@@ -33,7 +33,7 @@
     }
   }
 
-  function showCard(element, data) {
+  function openCard(element, data) {
     var template = window.card.createDialog(data);
     dialogInsertDom(template);
     offerDialog.classList.remove('hidden');
@@ -41,7 +41,7 @@
   }
 
   window.showCard = {
-    showCard: showCard,
+    openCard: openCard,
     closeCard: closeCard
   };
 

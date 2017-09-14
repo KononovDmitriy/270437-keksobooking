@@ -8,7 +8,7 @@
     IMG_WIDTH: '40',
     IMG_HEIGHT: '40'
   };
-  var pin = {
+  var pinParameters = {
     WIDTH: 56,
     HEIGHT: 75
   };
@@ -20,8 +20,8 @@
     var userAvatar = document.createElement('img');
 
     pinBaloon.classList.add(domElementAttributs.DIV_CLASS);
-    pinBaloon.style.left = (pinEl.location.x - (pin.WIDTH / 2)) + 'px';
-    pinBaloon.style.top = (pinEl.location.y - pin.HEIGHT) + 'px';
+    pinBaloon.style.left = (pinEl.location.x - (pinParameters.WIDTH / 2)) + 'px';
+    pinBaloon.style.top = (pinEl.location.y - pinParameters.HEIGHT) + 'px';
     pinBaloon.setAttribute('tabindex', 0);
     userAvatar.src = pinEl.author.avatar;
     userAvatar.className = domElementAttributs.IMG_CLASS;
@@ -49,9 +49,9 @@
     });
   }
 
-  function pinAddHandler(pinElement, index, clickCallback) {
-    pinElement.addEventListener('click', pinClickHandler.bind(null, index, clickCallback));
-    pinElement.addEventListener('keydown', pinKeydownHandler.bind(null, index, clickCallback));
+  function pinAddHandler(pin, index, clickCallback) {
+    pin.addEventListener('click', pinClickHandler.bind(null, index, clickCallback));
+    pin.addEventListener('keydown', pinKeydownHandler.bind(null, index, clickCallback));
   }
 
   function pinClickHandler(index, clickCallback, evt) {
