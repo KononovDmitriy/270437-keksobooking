@@ -15,15 +15,15 @@
 
   var tokyoPinMap = document.querySelector('.tokyo__pin-map');
 
-  function createPin(pinEl) {
+  function createPin(pin) {
     var pinBaloon = document.createElement('div');
     var userAvatar = document.createElement('img');
 
     pinBaloon.classList.add(domElementAttributs.DIV_CLASS);
-    pinBaloon.style.left = (pinEl.location.x - (pinParameters.WIDTH / 2)) + 'px';
-    pinBaloon.style.top = (pinEl.location.y - pinParameters.HEIGHT) + 'px';
+    pinBaloon.style.left = (pin.location.x - (pinParameters.WIDTH / 2)) + 'px';
+    pinBaloon.style.top = (pin.location.y - pinParameters.HEIGHT) + 'px';
     pinBaloon.setAttribute('tabindex', 0);
-    userAvatar.src = pinEl.author.avatar;
+    userAvatar.src = pin.author.avatar;
     userAvatar.className = domElementAttributs.IMG_CLASS;
     userAvatar.width = domElementAttributs.IMG_WIDTH;
     userAvatar.height = domElementAttributs.IMG_HEIGHT;
