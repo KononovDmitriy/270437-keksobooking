@@ -1,6 +1,7 @@
 'use strict';
 
 (function () {
+
   var keyCode = {
     ESC_KEYCODE: 27,
     ENTER_KEYCODE: 13
@@ -19,9 +20,9 @@
   }
 
   window.utils = {
-    isEnterEvent: function (evt, index, action) {
+    isEnterEvent: function (evt, index, action, actionCallback) {
       if (evt.keyCode === keyCode.ENTER_KEYCODE) {
-        action(evt, index);
+        action(evt, index, actionCallback);
       }
     },
     isEscEvent: function (evt, action) {
@@ -29,11 +30,11 @@
         action();
       }
     },
-    debounce: function (fun) {
+    debounce: function (funс) {
       if (lastTimeout) {
         window.clearTimeout(lastTimeout);
       }
-      lastTimeout = window.setTimeout(fun, DEBOUNCE_INTERVAL);
+      lastTimeout = window.setTimeout(funс, DEBOUNCE_INTERVAL);
     },
     displayError: displayError
   };

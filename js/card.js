@@ -1,6 +1,7 @@
 'use strict';
 
 (function () {
+
   var LODGE_TYPE = {
     flat: 'Квартира',
     house: 'Дом',
@@ -20,8 +21,19 @@
     });
   }
 
+  function getPhotoElement(photoUrl) {
+    var lodgePhoto = document.createElement('img');
+    lodgePhoto.setAttribute('src', photoUrl);
+    lodgePhoto.setAttribute('alt', 'Lodge photo');
+    lodgePhoto.setAttribute('width', '52px');
+    lodgePhoto.setAttribute('height', '42px');
+
+    return lodgePhoto;
+  }
+
   function createDialogPanelFromTemplate(ads) {
     var template = lodgeTemplate.content.cloneNode(true);
+    var lodge = template.querySelector('.lodge__photos');
 
     template.querySelector('.lodge__title').textContent = ads.offer.title;
     template.querySelector('.lodge__address').textContent = ads.offer.address;
@@ -35,7 +47,12 @@
         'Заезд после ' + ads.offer.checkin + ', выезд до ' + ads.offer.checkout;
     template.querySelector('.lodge__description').textContent =
         ads.offer.description;
+
     dialogTitleImg.src = ads.author.avatar;
+
+    ads.offer.photos.forEach(function (photoUrl) {
+      lodge.appendChild(getPhotoElement(photoUrl));
+    });
 
     createFeaturesElements(template, ads.offer.features);
     return template;
@@ -44,5 +61,6 @@
   window.card = {
     createDialog: createDialogPanelFromTemplate
   };
+
 })();
 

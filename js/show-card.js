@@ -1,11 +1,13 @@
 'use strict';
 
 (function () {
+
   var html = document.querySelector('html');
   var offerDialog = html.querySelector('#offer-dialog');
   var dialogClose = offerDialog.querySelector('.dialog__close');
 
-  addDialogCloseHandler();
+  dialogClose.addEventListener('click', dialogCloseClickHandler);
+  html.addEventListener('keydown', htmlKeydownHandler);
   closeCard();
 
   function dialogInsertDom(elementFromTemplate) {
@@ -18,12 +20,8 @@
     window.pin.togglePin();
   }
 
-  function addDialogCloseHandler() {
-    dialogClose.addEventListener('click', dialogCloseClickHandler);
-    html.addEventListener('keydown', htmlKeydownHandler);
-  }
-
-  function dialogCloseClickHandler() {
+  function dialogCloseClickHandler(evt) {
+    evt.preventDefault();
     closeCard();
   }
 
@@ -35,13 +33,16 @@
     }
   }
 
-  function showCard(element, data) {
+  function openCard(element, data) {
     var template = window.card.createDialog(data);
     dialogInsertDom(template);
     offerDialog.classList.remove('hidden');
     window.pin.togglePin(element);
   }
 
-  window.showCard = showCard;
+  window.showCard = {
+    openCard: openCard,
+    closeCard: closeCard
+  };
 
 })();
