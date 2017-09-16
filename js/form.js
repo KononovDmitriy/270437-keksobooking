@@ -12,7 +12,7 @@
   var PRICE = {
     'flat': 1000,
     'bungalo': 0,
-    'house': 5000,
+    'house': 10000,
     'palace': 10000
   };
 
