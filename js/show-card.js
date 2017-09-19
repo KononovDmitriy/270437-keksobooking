@@ -17,7 +17,6 @@
 
   function closeCard() {
     offerDialog.classList.add('hidden');
-    window.pin.togglePin();
   }
 
   function dialogCloseClickHandler(evt) {
@@ -33,11 +32,10 @@
     }
   }
 
-  function openCard(element, data) {
+  function openCard(data) {
     var template = window.card.createDialog(data);
     dialogInsertDom(template);
     offerDialog.classList.remove('hidden');
-    window.pin.togglePin(element);
   }
 
   window.showCard = {
